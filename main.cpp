@@ -181,7 +181,7 @@ void draw_screen( void ) {
     
     float you_x_new = you_x - ( (float)sin(you_angle*piover180) * you_velocity * you_dir ) / fps;
     float you_z_new = you_z + ( (float)cos(you_angle*piover180) * you_velocity * you_dir ) / fps;
-    if (boundCheck(you_x_new, you_z_new)) {
+    if (boundCheck(you_x_new, you_x_new, you_z_new, you_z_new)) {
         you_x = you_x_new;
         you_z = you_z_new;
     }
