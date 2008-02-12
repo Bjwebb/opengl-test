@@ -15,10 +15,10 @@ bool boundCheck(float minX, float maxX, float minZ, float maxZ) {
 //     float minZ = z;
 //     float maxZ = z;
     for (int i=0; i<boxes; i++) {
-        if (    minX > boxArray[i].min.x &&
-                maxX < boxArray[i].max.x &&
-                minZ > boxArray[i].min.z &&
-                maxZ < boxArray[i].max.z ) {
+        if (    maxX > boxArray[i].min.x &&
+                minX < boxArray[i].max.x &&
+                maxZ > boxArray[i].min.z &&
+                minZ < boxArray[i].max.z ) {
             return false;
         }
     }

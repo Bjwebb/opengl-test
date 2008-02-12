@@ -181,7 +181,7 @@ void draw_screen( void ) {
     
     float you_x_new = you_x - ( (float)sin(you_angle*piover180) * you_velocity * you_dir ) / fps;
     float you_z_new = you_z + ( (float)cos(you_angle*piover180) * you_velocity * you_dir ) / fps;
-    if (boundCheck(you_x_new, you_x_new, you_z_new, you_z_new)) {
+    if (boundCheck(you_x_new-1, you_x_new+1, you_z_new-1, you_z_new+1)) {
         you_x = you_x_new;
         you_z = you_z_new;
     }
@@ -334,7 +334,7 @@ static void setup_opengl( int width, int height ) {
 int main( int argc, char* argv[] ) {
     boundCreate();
     bool fullscreen = false;
-    char* world = "torus.obj";
+    char* world = "monkey.obj";
     for (int i=0; i<argc; i++) {
         if (strcmp(argv[i], "-win") == 0) fullscreen = false;
         if (strcmp(argv[i], "-f") == 0) fullscreen = true;
