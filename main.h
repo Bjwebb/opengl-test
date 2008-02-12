@@ -34,5 +34,5 @@ struct tThinWall
 void SetupWorld(char* worldfile);
 void DrawWorld();
 void boundCreate();
-bool boundCheck(float minX, float maxX, float minZ, float maxZ);
+bool boundCheck(float x, float z);
 

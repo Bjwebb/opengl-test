@@ -9,16 +9,16 @@ void boundCreate() {
     boxArray[0].max.z  = -5; 
 }
 
-bool boundCheck(float minX, float maxX, float minZ, float maxZ) {
+bool boundCheck(float x, float z, float ) {
 //     float minX = x;
 //     float maxX = x;
 //     float minZ = z;
 //     float maxZ = z;
     for (int i=0; i<boxes; i++) {
-        if (    minX > boxArray[i].min.x &&
-                maxX < boxArray[i].max.x &&
-                minZ > boxArray[i].min.z &&
-                maxZ < boxArray[i].max.z ) {
+        if (    x > boxArray[i].min.x &&
+                x < boxArray[i].max.x &&
+                z > boxArray[i].min.z &&
+                z < boxArray[i].max.z ) {
             return false;
         }
     }
