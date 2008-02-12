@@ -1,5 +1,6 @@
 /*
     Parse materials
+    On screen display
 */
 
 #include <SDL/SDL.h>
