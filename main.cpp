@@ -53,7 +53,8 @@ void handle_keydown( SDL_keysym* keysym ) {
             you_velocity--;
             printf("%f\n", you_velocity);
             break;
-        case SDLK_b:
+        case SDLK_q:
+        case SDLK_ESCAPE:
             quit_app( 0 );
             break;
         case SDLK_l:
