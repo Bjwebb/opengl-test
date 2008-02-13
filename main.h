@@ -1,8 +1,3 @@
-/*
-    Parse materials
-    On screen display
-*/
-
 #include <SDL/SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
