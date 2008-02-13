@@ -1,13 +1,5 @@
 #include "main.h"
 
-static GLfloat red[]    = { 255,   0,   0 };
-static GLfloat green[]  = {   0, 255,   0 };
-static GLfloat blue[]   = {   0,   0, 255 };
-static GLfloat white[]  = { 255, 255, 255 };
-static GLfloat black[]  = {   0,   0,   0 };
-static GLfloat yellow[] = { 255, 255,   0 };
-static GLfloat purple[] = { 255,   0, 255 };
-
 static float cube_angle = 0.0f;
 
 float you_angle = 0.0f;
@@ -61,7 +53,7 @@ void handle_keydown( SDL_keysym* keysym ) {
             you_velocity--;
             printf("%f\n", you_velocity);
             break;
-        case SDLK_ESCAPE:
+        case SDLK_b:
             quit_app( 0 );
             break;
         case SDLK_l:
@@ -181,7 +173,7 @@ void draw_screen( void ) {
     
     float you_x_new = you_x - ( (float)sin(you_angle*piover180) * you_velocity * you_dir ) / fps;
     float you_z_new = you_z + ( (float)cos(you_angle*piover180) * you_velocity * you_dir ) / fps;
-    if (boundCheck(you_x_new-1, you_x_new+1, you_z_new-1, you_z_new+1)) {
+    if (boundCheck(you_x_new-1, you_x_new+1, you_z_new-2, you_z_new+2)) {
         you_x = you_x_new;
         you_z = you_z_new;
     }
@@ -280,9 +272,6 @@ void draw_screen( void ) {
     glVertexPointer( 3, GL_FLOAT, sizeof(WVector), Vertices);
     glDrawElements( GL_QUADS, numIndices, GL_UNSIGNED_INT, Indices );
 
-    glLoadIdentity(); you_compensate();
-    glTranslatef( 0.0f, 1.0f, -6.0f );
-    glColor3fv( blue );
     DrawWorld();
 
     /* Gather our frames per second */
@@ -332,7 +321,6 @@ static void setup_opengl( int width, int height ) {
 }
 
 int main( int argc, char* argv[] ) {
-    boundCreate();
     bool fullscreen = false;
     char* world = "monkey.obj";
     for (int i=0; i<argc; i++) {
