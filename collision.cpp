@@ -34,3 +34,8 @@ bool boundCheck(float minX, float maxX, float minZ, float maxZ) {
     }
     return true;
 }
+
+void wallCreate(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+    
+}
+

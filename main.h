@@ -40,6 +40,7 @@ void you_compensate();
 
 void SetupWorld(char* worldfile);
 void DrawWorld();
+void wallCreate(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
 
 void boundCreate(OBJECT* objs, int num);
 bool boundCheck(float minX, float maxX, float minZ, float maxZ);

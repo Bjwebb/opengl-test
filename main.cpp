@@ -272,7 +272,8 @@ void draw_screen( void ) {
     glNormalPointer( GL_FLOAT, sizeof(WVector), Normals);
     glVertexPointer( 3, GL_FLOAT, sizeof(WVector), Vertices);
     glDrawElements( GL_QUADS, numIndices, GL_UNSIGNED_INT, Indices );
-
+    
+    wallCreate(-10, 2);
     DrawWorld();
 
     /* Gather our frames per second */
