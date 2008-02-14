@@ -1,10 +1,10 @@
 #include "main.h"
 
-static float cube_angle = 0.0f;
+float cube_angle = 0.0f;
 
 float you_angle = 0.0f;
 float you_x = 0.0f;
-float you_z = 0.0f;
+float you_z = 3.0f;
 float you_vel_angle = 0.0f;
 float you_vel_x = 0.0f;
 float you_vel_z = 0.0f;
@@ -33,11 +33,9 @@ void handle_keydown( SDL_keysym* keysym ) {
     switch (keysym->sym) {
         case SDLK_UP:
             you_dir = -1;
-//             printf("%d, %d\n", you_x, you_z);
             break;
         case SDLK_DOWN:
             you_dir = 1;
-//             printf("%f, %f\n", you_x, you_z);
             break;
         case SDLK_LEFT:
             you_turn = -1;
@@ -47,11 +45,11 @@ void handle_keydown( SDL_keysym* keysym ) {
             break;
         case SDLK_KP_PLUS:
             you_velocity++;
-            printf("%f\n", you_velocity);
+//             printf("%f\n", you_velocity);
             break;
         case SDLK_KP_MINUS:
             you_velocity--;
-            printf("%f\n", you_velocity);
+//             printf("%f\n", you_velocity);
             break;
         case SDLK_q:
         case SDLK_ESCAPE:
@@ -170,7 +168,7 @@ void draw_cube( void ) {
 void draw_screen( void ) {
     // Step
     you_angle += ( 10 * you_velocity * you_turn ) / fps;
-    printf("Angle: %f", you_angle);
+//     printf("Angle: %f", you_angle);
     
     float you_x_new = you_x - ( (float)sin(you_angle*piover180) * you_velocity * you_dir ) / fps;
     float you_z_new = you_z + ( (float)cos(you_angle*piover180) * you_velocity * you_dir ) / fps;
@@ -178,7 +176,8 @@ void draw_screen( void ) {
         you_x = you_x_new;
         you_z = you_z_new;
     }
-    printf("Position: (%f, %f)\n", you_x, you_z);
+//     printf("Position: (%f, %f)\n", you_x, you_z);
+//     printf("%f\n", you_velocity);
     
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
@@ -273,10 +272,16 @@ void draw_screen( void ) {
     glVertexPointer( 3, GL_FLOAT, sizeof(WVector), Vertices);
     glDrawElements( GL_QUADS, numIndices, GL_UNSIGNED_INT, Indices );
     
-    wallCreate(-10, 2);
+    wallCreate(-10, 0, 0, 2, 2, 0);
     DrawWorld();
+    
+    glLoadIdentity(); glTranslatef(0, 0, -1);
+    glColor3f(1, 1, 1);
+    glRasterPos2f(0.3f, -0.5f);
+    glPrint("FPS: %f", fps);
 
-    /* Gather our frames per second */
+    /* Gather our frame
+            printf("%f\n", you_velocity);s per second */
     Frames++;
     GLint t = SDL_GetTicks();
     if (t - T0 >= 100) {
@@ -286,7 +291,7 @@ void draw_screen( void ) {
         T0 = t;
         Frames = 0;
     }
-
+    
     SDL_GL_SwapBuffers( );
 }
 
@@ -319,6 +324,8 @@ static void setup_opengl( int width, int height ) {
      * Replace this with a call to glFrustum.
      */
     gluPerspective( 60.0, ratio, 1.0, 1024.0 );
+    
+    buildFont();
     return;
 }
 

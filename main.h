@@ -24,26 +24,15 @@ typedef struct tagOBJECT {
     int numIndices, numVertices, numNormals;
 } OBJECT;
 
-struct tBoundingBox
-{
-      WVector max;
-      WVector min;
-};
-
-struct tThinWall
-{
-      WVector max;
-      WVector min;
-};
-
 void you_compensate();
 
 void SetupWorld(char* worldfile);
 void DrawWorld();
-void wallCreate(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
 
 void boundCreate(OBJECT* objs, int num);
 bool boundCheck(float minX, float maxX, float minZ, float maxZ);
+void wallCreate(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+bool wallCheck(float minX, float maxX, float minZ, float maxZ);
 
 static GLfloat red[]    = { 255,   0,   0 };
 static GLfloat green[]  = {   0, 255,   0 };
@@ -52,3 +41,6 @@ static GLfloat white[]  = { 255, 255, 255 };
 static GLfloat black[]  = {   0,   0,   0 };
 static GLfloat yellow[] = { 255, 255,   0 };
 static GLfloat purple[] = { 255,   0, 255 };
+
+void buildFont(GLvoid);
+void glPrint(const char *fmt, ...);

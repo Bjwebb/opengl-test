@@ -1,6 +1,21 @@
 #include "main.h"
+
+struct tBoundingBox
+{
+      WVector max;
+      WVector min;
+};
+
+struct tThinWall
+{
+      WVector max;
+      WVector min;
+};
+
 int boxes;
 tBoundingBox *boxArray;
+const int walls = 1;
+tThinWall *wallArray = new tThinWall[walls];
 
 void boundCreate(OBJECT* objs, int num) {
     boxArray = new tBoundingBox[num];
@@ -32,10 +47,21 @@ bool boundCheck(float minX, float maxX, float minZ, float maxZ) {
             return false;
         }
     }
-    return true;
+    return wallCheck(minX, maxX, minZ, maxZ);
 }
 
 void wallCreate(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
-    
+    wallArray[0].min.x = minX;
+    wallArray[0].min.y = minY;
+    wallArray[0].min.z = minZ;
+    wallArray[0].max.x = maxX;
+    wallArray[0].max.y = maxY;
+    wallArray[0].max.z = maxZ;
 }
 
+bool wallCheck(float minX, float maxX, float minZ, float maxZ) {
+    if (maxX > wallArray[0].min.x && minX < wallArray[0].max.x
+            && minZ < wallArray[0].min.z && maxZ > wallArray[0].min.z)
+        return false;
+    return true;
+}
