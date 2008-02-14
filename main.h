@@ -7,6 +7,7 @@
 #include <math.h>
 #include <iostream>
 #include <fstream>
+#include <string.h>
 
 using namespace std;
 
@@ -18,6 +19,8 @@ struct WVector
 
 typedef struct tagOBJECT {
     WVector pos;
+    WVector rot;
+    float angle;
     GLuint* Indices;
     WVector* Vertices;
     WVector* Normals;

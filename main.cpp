@@ -3,8 +3,8 @@
 float cube_angle = 0.0f;
 
 float you_angle = 0.0f;
-float you_x = 0.0f;
-float you_z = 3.0f;
+float you_x = 3.0f;
+float you_z = -3.0f;
 float you_vel_angle = 0.0f;
 float you_vel_x = 0.0f;
 float you_vel_z = 0.0f;
