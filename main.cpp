@@ -3,8 +3,8 @@
 float cube_angle = 0.0f;
 
 float you_angle = 0.0f;
-float you_x = 3.0f;
-float you_z = -3.0f;
+float you_x = 0;
+float you_z = 0;
 float you_vel_angle = 0.0f;
 float you_vel_x = 0.0f;
 float you_vel_z = 0.0f;
@@ -343,6 +343,9 @@ int main( int argc, char* argv[] ) {
         if (strcmp(argv[i], "-d") == 0) debug = true;
     }
     SetupWorld(world);
+    you_x = getWorldX();
+    you_z = getWorldZ();
+    you_angle = getWorldAngle();
 
     /* Information about the current video settings. */
     const SDL_VideoInfo* info = NULL;

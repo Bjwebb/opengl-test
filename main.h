@@ -51,6 +51,9 @@ typedef struct tagOBJECT {
 void you_compensate();
 
 void SetupWorld(char* worldfile);
+float getWorldX();
+float getWorldZ();
+float getWorldAngle();
 void DrawWorld();
 
 void boundCreate(OBJECT* objs, int num);

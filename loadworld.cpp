@@ -3,6 +3,10 @@
 OBJECT *Objects;
 int numObjects;
 
+float world_x = 0;
+float world_z = 0;
+float world_angle = 0;
+
 typedef struct tagVERTEX                        // Build Our Vertex Structure
 {
     float x, y, z;                          // 3D Coordinates
@@ -13,6 +17,16 @@ typedef struct tagFACE {
     int v;                          // 3D Vertices
     // float u, v;                         // Texture Coordinates
 } FACE;
+
+float getWorldX() {
+    return world_x;
+}
+float getWorldZ() {
+    return world_z;
+}
+float getWorldAngle() {
+    return world_angle;
+}
 
 short readstr(FILE *f, char *string) {                 // Read In A String
     do
@@ -347,9 +361,17 @@ void SetupWorld(char* worldfile) {
     char tmp2[255];
     readstr(filein,oneline);
     sscanf(oneline, "%s %s", tmp1, tmp2);
-//     printf("numObjects: %s\n", tmp2);
     if (strcmp(tmp1, "numObjects") == 0) numObjects = atoi(tmp2);
-//     printf("numObjects: %d\n\n", numObjects);
+    readstr(filein,oneline);
+    sscanf(oneline, "%s %s", tmp1, tmp2);
+    if (strcmp(tmp1, "X") == 0) world_x = atoi(tmp2);
+    readstr(filein,oneline);
+    sscanf(oneline, "%s %s", tmp1, tmp2);
+    if (strcmp(tmp1, "Z") == 0) world_z = atoi(tmp2);
+    readstr(filein,oneline);
+    sscanf(oneline, "%s %s", tmp1, tmp2);
+    if (strcmp(tmp1, "Angle") == 0) world_angle = atoi(tmp2);
+
     Objects = new OBJECT[numObjects];
     
     int i = 0;
