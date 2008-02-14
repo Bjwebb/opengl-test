@@ -27,6 +27,7 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
     FILE *filein;                           // File To Work With
     filein = fopen(mtlfile, "rt");                // Open Our File
     tmpobj.mtl = new WMaterial[2];
+    bool content = false;
     for (int i=0; i<2; i++) {
         float ar=0, ag=0, ab=0, dr=0, dg=0, db=0, sr=0, sg=0, sb=0;
         float ns=0;
@@ -36,6 +37,7 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
             char t1[255], t2[255], t3[255], t4[255];
             float f2=0, f3=0, f4=0;
             if (readstr(filein,oneline)) break;
+            content = true;
             int num = sscanf(oneline, "%s %f %f %f", t1, &f2, &f3, &f4);
             if (strcmp(t1,"newmtl") == 0) {
                 sscanf(oneline, "%s %s", t2, t3);
@@ -78,6 +80,8 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
         tmpobj.mtl[i].specular[2] = sb;
         tmpobj.mtl[i].specular[3] = 1;
         tmpobj.mtl[i].shininess[0] = ns;
+        printf("$ %d\n", content);
+        tmpobj.ismtl = content;
     }
     fclose(filein);
     return tmpobj;
@@ -225,11 +229,8 @@ OBJECT LoadObj(char* objfile) {
         //             printf("Face: %d %d %d %d\n", face[faceloop-4].v, face[faceloop-3].v, face[faceloop-2].v, face[faceloop-1].v);
                 }
                 else if (faceloop[grouploop] != 0) {
-                    if (strcmp(tmp, "usemtl") == 0) {
-                        // strcpy(mtls[grouploop+1], tmp2);
-                        // printf("mtls[%d]: %s\n", grouploop+1, mtls[grouploop+1]);
-                        skip = true;
-                    } // TODO Move this messy hack
+                    if (strcmp(tmp, "usemtl") == 0) {                                   skip = true;
+                    }
                     break;
                 }
             }
@@ -277,18 +278,21 @@ OBJECT LoadObj(char* objfile) {
     tmpobj = LoadMtl(tmp2, tmpobj);
 //     printf("Test D\n");
 
-    int i = 2; // TODO multiple
-    for (int j=0; j<Objects[i].numGroups; j++) {
-        Objects[i].groups[j].mtl = -1;
-        printf("\n%s\n", Objects[i].groups[j].mtlname);
-        for (int c=0; c<Objects[i].numMtl; c++) {
-            printf("%s\n", Objects[i].mtl[c].name);
-            if (strcmp(Objects[i].groups[j].mtlname, Objects[i].mtl[c].name) == 0) {
-                Objects[i].groups[j].mtl = c;
-                printf("Success!");
+    printf("asdf %d\n", tmpobj.ismtl);
+    if (tmpobj.ismtl) {
+        printf("### W00t ###");
+        for (int j=0; j<tmpobj.numGroups; j++) {
+            tmpobj.groups[j].mtl = -1;
+            printf("\n%s\n", tmpobj.groups[j].mtlname);
+            for (int c=0; c<tmpobj.numMtl; c++) {
+                printf("%s\n", tmpobj.mtl[c].name);
+                if (strcmp(tmpobj.groups[j].mtlname, tmpobj.mtl[c].name) == 0) {
+                    tmpobj.groups[j].mtl = c;
+                    printf("Success!");
+                }
             }
+            printf("'m' = %d\n", tmpobj.groups[j].mtl);
         }
-        printf("'m' = %d\n", Objects[i].groups[j].mtl);
     }
 
 
@@ -303,7 +307,7 @@ void DrawWorld() {
         glRotatef(Objects[i].rot.y, 0, 1, 0);
         glRotatef(Objects[i].rot.z, 0, 0, 1);
         
-        if (i != 2) {
+        if (!Objects[i].ismtl) {
             GLfloat a[] = {0,0,0,1};
             GLfloat d[] = {0.8f,0.8f,0.8f,1};
             GLfloat s[] = {0.5f,0.5f,0.5f};
@@ -319,7 +323,7 @@ void DrawWorld() {
         glNormalPointer( GL_FLOAT, sizeof(WVector), Objects[i].Normals );
         
         for (int j=0; j<Objects[i].numGroups; j++) {
-            if (i == 2) {
+            if (Objects[i].ismtl) {
                 if (Objects[i].groups[j].mtl != -1) {
                     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Objects[i].mtl[Objects[i].groups[j].mtl].ambient);
                     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Objects[i].mtl[Objects[i].groups[j].mtl].diffuse);

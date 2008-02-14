@@ -41,7 +41,8 @@ typedef struct tagOBJECT {
     WGroup* groups;
     int numMtl;
     WMaterial* mtl;
-    
+    bool ismtl;
+
     WVector* Vertices;
     WVector* Normals;
     int numVertices, numNormals;
