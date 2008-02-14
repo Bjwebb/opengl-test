@@ -60,5 +60,5 @@ static GLfloat black[]  = {   0,   0,   0 };
 static GLfloat yellow[] = { 255, 255,   0 };
 static GLfloat purple[] = { 255,   0, 255 };
 
-void buildFont(GLvoid);
+void buildFont();
 void glPrint(const char *fmt, ...);
