@@ -1,3 +1,4 @@
+//TODO does not parse first one, why?
 #include "main.h"
 
 OBJECT *Objects;
@@ -267,6 +268,22 @@ OBJECT LoadObj(char* objfile) {
     
     tmpobj = LoadMtl(tmp2, tmpobj);
 //     printf("Test D\n");
+
+    int i = 2; // TODO multiple
+    for (int j=0; j<Objects[i].numGroups; j++) {
+        Objects[i].groups[j].mtl = -1;
+        printf("\n%s\n", Objects[i].groups[j].mtlname);
+        for (int c=0; c<Objects[i].numMtl; c++) {
+            printf("%s\n", Objects[i].mtl[c].name);
+            if (strcmp(Objects[i].groups[j].mtlname, Objects[i].mtl[c].name) == 0) {
+                Objects[i].groups[j].mtl = c;
+                printf("Success!");
+            }
+        }
+        printf("'m' = %d\n", Objects[i].groups[j].mtl);
+    }
+
+
     return tmpobj;
 }
 
@@ -295,22 +312,12 @@ void DrawWorld() {
         
         for (int j=0; j<Objects[i].numGroups; j++) {
             if (i == 2) {
-                int m = -1;
-                printf("\n%s\n", Objects[i].groups[j].mtlname);
-                for (int c=0; c<Objects[i].numMtl; c++) {
-                    printf("%s\n", Objects[i].mtl[c].name);
-                    if (strcmp(Objects[i].groups[j].mtlname, Objects[i].mtl[c].name) == 0) {
-                        m = c;
-                        printf("Success!");
-                    }
-                } //TODO do this only once
-                printf("m = %d\n", m);
-                if (m != -1) {
-                    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Objects[i].mtl[m].ambient);
-                    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Objects[i].mtl[m].diffuse);
-                    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Objects[i].mtl[m].specular);
-                    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Objects[i].mtl[m].shininess);
-                    glColor3fv(Objects[i].mtl[m].diffuse);
+                if (Objects[i].groups[j].mtl != -1) {
+                    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Objects[i].mtl[Objects[i].groups[j].mtl].ambient);
+                    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Objects[i].mtl[Objects[i].groups[j].mtl].diffuse);
+                    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Objects[i].mtl[Objects[i].groups[j].mtl].specular);
+                    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Objects[i].mtl[Objects[i].groups[j].mtl].shininess);
+                    glColor3fv(Objects[i].mtl[Objects[i].groups[j].mtl].diffuse);
                 }
             }
             glDrawElements( GL_QUADS, Objects[i].groups[j].numIndices, GL_UNSIGNED_INT, Objects[i].groups[j].Indices );
