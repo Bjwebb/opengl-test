@@ -361,16 +361,19 @@ void SetupWorld(char* worldfile) {
     char tmp2[255];
     readstr(filein,oneline);
     sscanf(oneline, "%s %s", tmp1, tmp2);
-    if (strcmp(tmp1, "numObjects") == 0) numObjects = atoi(tmp2);
-    readstr(filein,oneline);
-    sscanf(oneline, "%s %s", tmp1, tmp2);
-    if (strcmp(tmp1, "X") == 0) world_x = atoi(tmp2);
-    readstr(filein,oneline);
-    sscanf(oneline, "%s %s", tmp1, tmp2);
-    if (strcmp(tmp1, "Z") == 0) world_z = atoi(tmp2);
-    readstr(filein,oneline);
-    sscanf(oneline, "%s %s", tmp1, tmp2);
-    if (strcmp(tmp1, "Angle") == 0) world_angle = atoi(tmp2);
+    if (!strcmp(tmp1, "Var") == 0) {
+        printf("Sorry, this filetype/version is not supported.");
+        exit(1);
+    }
+    while (true) {
+        readstr(filein,oneline);
+        sscanf(oneline, "%s %s", tmp1, tmp2);
+        if (strcmp(tmp1, "numObjects") == 0) numObjects = atoi(tmp2);
+        if (strcmp(tmp1, "X") == 0) world_x = atoi(tmp2);
+        if (strcmp(tmp1, "Z") == 0) world_z = atoi(tmp2);
+        if (strcmp(tmp1, "Angle") == 0) world_angle = atoi(tmp2);
+        if (strcmp(tmp1, "endVar") == 0) break;
+    }
 
     Objects = new OBJECT[numObjects];
     
