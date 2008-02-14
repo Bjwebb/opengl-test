@@ -40,7 +40,8 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
             if (strcmp(t1,"newmtl") == 0) {
                 sscanf(oneline, "%s %s", t2, t3);
                 printf("Material: %s\n", t3);
-                tmpobj.mtl[i].name = t3;
+                tmpobj.mtl[i].name = new char[255];
+                strcpy(tmpobj.mtl[i].name, t3);
             }
             if (strcmp(t1,"Ka") == 0) {
                 ar = f2;
@@ -151,6 +152,7 @@ OBJECT LoadObj(char* objfile) {
     bool loop = true;
     char** mtls;
     mtls = new char*[5]; // TODO replace these 5s with variable!
+    for (int i=0; i<5; i++) mtls[i] = new char[256];
     while (grouploop < numgroup && loop) {
 //         printf("Test: Grouploop: %d\n", grouploop);
         faceloop[grouploop] = 0;
@@ -162,15 +164,14 @@ OBJECT LoadObj(char* objfile) {
         char tmp2[255];
         sscanf(oneline, "%s %s", tmp, tmp2);
         if (strcmp(tmp, "usemtl") == 0) {
-            printf("Material: %s\n", tmp2);
-            mtls[loop] = tmp2;
+            strcpy(mtls[grouploop], tmp2);
+            printf("mtls[%d]: %s\n", grouploop, mtls[grouploop]);
         }
         else if (strcmp(tmp, "f") == 0) {
             while (faceloop[grouploop] < numface) {
                 if (readstr(filein,oneline)) { loop=false; break; }
 //                 printf("Test: %d : %s", faceloop[grouploop], oneline);
-                char tmp[255];
-                sscanf(oneline, "%s", tmp);
+                sscanf(oneline, "%s %s", tmp, tmp2);
 //                 printf("Test: Faceloop 2\n");
                 if (strcmp(tmp, "f") == 0) {
                     if (sscanf(oneline, "%s %s %s %s %s", tmp, &v1, &v2, &v3, &v4) == 4) {
@@ -215,7 +216,13 @@ OBJECT LoadObj(char* objfile) {
                     v4[9] = '\0'; // TODO make this more pretty; moreover, why do they carry on?
         //             printf("Face: %d %d %d %d\n", face[faceloop-4].v, face[faceloop-3].v, face[faceloop-2].v, face[faceloop-1].v);
                 }
-                else if (faceloop[grouploop] != 0) { break; }
+                else if (faceloop[grouploop] != 0) {
+                    if (strcmp(tmp, "usemtl") == 0) {
+                        strcpy(mtls[grouploop+1], tmp2);
+                        printf("mtls[%d]: %s\n", grouploop+1, mtls[grouploop+1]);
+                    } // TODO Move this messy hack
+                    break;
+                }
             }
             grouploop++;
             printf("%d %d\n", grouploop, loop);
@@ -250,6 +257,7 @@ OBJECT LoadObj(char* objfile) {
         tmpobj.groups[j].numIndices = faceloop[j];
         tmpobj.groups[j].Indices = new GLuint[tmpobj.groups[j].numIndices];
         tmpobj.groups[j].mtlname = mtls[j];
+        printf("* %s\n", tmpobj.groups[j].mtlname);
         for (int i=0; i<tmpobj.groups[j].numIndices; i++) {
             tmpobj.groups[j].Indices[i] = face[j][i].v - 1;
         }
@@ -287,14 +295,23 @@ void DrawWorld() {
         
         for (int j=0; j<Objects[i].numGroups; j++) {
             if (i == 2) {
-                int m;
-                if (j == 0) m = 1;
-                else m = 0;
-                glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Objects[i].mtl[m].ambient);
-                glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Objects[i].mtl[m].diffuse);
-                glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Objects[i].mtl[m].specular);
-                glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Objects[i].mtl[m].shininess);
-                glColor3fv(Objects[i].mtl[m].diffuse);
+                int m = -1;
+                printf("\n%s\n", Objects[i].groups[j].mtlname);
+                for (int c=0; c<Objects[i].numMtl; c++) {
+                    printf("%s\n", Objects[i].mtl[c].name);
+                    if (strcmp(Objects[i].groups[j].mtlname, Objects[i].mtl[c].name) == 0) {
+                        m = c;
+                        printf("Success!");
+                    }
+                } //TODO do this only once
+                printf("m = %d\n", m);
+                if (m != -1) {
+                    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Objects[i].mtl[m].ambient);
+                    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Objects[i].mtl[m].diffuse);
+                    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Objects[i].mtl[m].specular);
+                    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Objects[i].mtl[m].shininess);
+                    glColor3fv(Objects[i].mtl[m].diffuse);
+                }
             }
             glDrawElements( GL_QUADS, Objects[i].groups[j].numIndices, GL_UNSIGNED_INT, Objects[i].groups[j].Indices );
         }

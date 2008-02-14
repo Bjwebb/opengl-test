@@ -29,6 +29,7 @@ struct WGroup {
     GLuint* Indices;
     int numIndices;
     char* mtlname;
+    int mtl;
 };
 
 typedef struct tagOBJECT {
