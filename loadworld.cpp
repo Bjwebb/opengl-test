@@ -83,11 +83,10 @@ OBJECT LoadObj(char* worldfile) {
         char tmp[255];
         sscanf(oneline, "%s", tmp);
         if (strcmp(tmp, "f") == 0) {
-            if (sscanf(oneline, "%s %s %s %s %s", tmp, &v1, &v2, &v3, &v4) == 4) printf("Test %s ", v4);
+            if (sscanf(oneline, "%s %s %s %s %s", tmp, &v1, &v2, &v3, &v4) == 4) /*printf("Test %s ", v4)*/;
         // Store Values Into Respective Vertices
             int test1, test2;
             if (sscanf(v1, "%d//%d", &test1, &test2) == 2) {
-//                 printf("Test %d %d\n", test1, test2);
                 face[faceloop].v = test1;
             }
             else {
@@ -95,7 +94,6 @@ OBJECT LoadObj(char* worldfile) {
             }
             faceloop++;
             if (sscanf(v2, "%d//%d", &test1, &test2) == 2) {
-//                 printf("Test %d %d\n", test1, test2);
                 face[faceloop].v = test1;
             }
             else {
@@ -103,7 +101,6 @@ OBJECT LoadObj(char* worldfile) {
             }
             faceloop++;
             if (sscanf(v3, "%d//%d", &test1, &test2) == 2) {
-//                 printf("Test %d %d\n", test1, test2);
                 face[faceloop].v = test1;
             }
             else {
@@ -112,7 +109,6 @@ OBJECT LoadObj(char* worldfile) {
             faceloop++;
 //             printf("%s\n", v4);
             if (sscanf(v4, "%d//%d", &test1, &test2) == 2) {
-//                 printf("Test %d %d\n", test1, test2);
                 face[faceloop].v = test1;
             }
             else {
@@ -128,8 +124,9 @@ OBJECT LoadObj(char* worldfile) {
     }
     fclose(filein);
     
-    printf("%d\n",vertloop);
-    printf("%d\n",faceloop);
+    // DEBUG
+//     printf("%d\n",vertloop);
+//     printf("%d\n",faceloop);
 
     OBJECT tmpobj;
     tmpobj.numVertices = vertloop;    

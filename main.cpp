@@ -23,6 +23,8 @@ static GLint T0     = 0;
 static GLint Frames = 0;
 GLfloat fps = 500;
 
+bool debug = true;
+
 void quit_app( int code ) {
     // Return to previous resolution etc.
     SDL_Quit( );
@@ -64,6 +66,9 @@ void handle_keydown( SDL_keysym* keysym ) {
             glDisable( GL_LIGHTING );
             else
             glEnable( GL_LIGHTING );
+            break;
+        case SDLK_d:
+            debug = !debug;
             break;
         default:
             break;
@@ -168,7 +173,6 @@ void draw_cube( void ) {
 void draw_screen( void ) {
     // Step
     you_angle += ( 10 * you_velocity * you_turn ) / fps;
-//     printf("Angle: %f", you_angle);
     
     float you_x_new = you_x - ( (float)sin(you_angle*piover180) * you_velocity * you_dir ) / fps;
     float you_z_new = you_z + ( (float)cos(you_angle*piover180) * you_velocity * you_dir ) / fps;
@@ -176,8 +180,6 @@ void draw_screen( void ) {
         you_x = you_x_new;
         you_z = you_z_new;
     }
-//     printf("Position: (%f, %f)\n", you_x, you_z);
-//     printf("%f\n", you_velocity);
     
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
@@ -275,19 +277,20 @@ void draw_screen( void ) {
     wallCreate(-10, 0, 0, 2, 2, 0);
     DrawWorld();
     
-    glLoadIdentity(); glTranslatef(0, 0, -1);
-    glColor3f(1, 1, 1);
-    glRasterPos2f(0.3f, -0.5f);
-    glPrint("FPS: %f", fps);
-
-    /* Gather our frame
-            printf("%f\n", you_velocity);s per second */
+    if (debug) {
+        glLoadIdentity(); glTranslatef(0, 0, -1);
+        glColor3f(1, 1, 1);
+        glRasterPos2f(-0.7f, -0.5f);
+        glPrint("X: %f   Z: %f   Angle: %f   Velocity: %f", you_x, you_z, you_angle, you_velocity);
+        glRasterPos2f(-0.7f, 0.5f);
+        glPrint("FPS: %f", fps);
+    }
+    
     Frames++;
     GLint t = SDL_GetTicks();
     if (t - T0 >= 100) {
         GLfloat seconds = (t - T0) / 1000.0;
         fps = Frames / seconds;
-//         printf("%d frames in %g seconds = %g FPS\n", Frames, seconds, fps);
         T0 = t;
         Frames = 0;
     }
@@ -331,12 +334,13 @@ static void setup_opengl( int width, int height ) {
 
 int main( int argc, char* argv[] ) {
     bool fullscreen = false;
-    char* world = "monkey.obj";
+    char* world = "world";
     for (int i=0; i<argc; i++) {
         if (strcmp(argv[i], "-win") == 0) fullscreen = false;
         if (strcmp(argv[i], "-f") == 0) fullscreen = true;
         if (strcmp(argv[i], "-w") == 0)
             world = argv[i+1];
+        if (strcmp(argv[i], "-d") == 0) debug = true;
     }
     SetupWorld(world);
 
