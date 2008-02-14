@@ -31,15 +31,16 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
         float ar=0, ag=0, ab=0, dr=0, dg=0, db=0, sr=0, sg=0, sb=0;
         float ns=0;
         while (true) {
-            printf("Test\n");
+//            printf("Test\n");
             char oneline[255];
             char t1[255], t2[255], t3[255], t4[255];
             float f2=0, f3=0, f4=0;
             if (readstr(filein,oneline)) break;
             int num = sscanf(oneline, "%s %f %f %f", t1, &f2, &f3, &f4);
-            if (strcmp(t1,"newmtl[0]") == 0) {
+            if (strcmp(t1,"newmtl") == 0) {
                 sscanf(oneline, "%s %s", t2, t3);
                 printf("Material: %s\n", t3);
+                tmpobj.mtl[i].name = t3;
             }
             if (strcmp(t1,"Ka") == 0) {
                 ar = f2;
@@ -148,6 +149,8 @@ OBJECT LoadObj(char* objfile) {
     int faceloop[numgroup];
 //     printf("Test 3\n");
     bool loop = true;
+    char** mtls;
+    mtls = new char*[5]; // TODO replace these 5s with variable!
     while (grouploop < numgroup && loop) {
 //         printf("Test: Grouploop: %d\n", grouploop);
         faceloop[grouploop] = 0;
@@ -156,10 +159,11 @@ OBJECT LoadObj(char* objfile) {
         if (readstr(filein,oneline)) { break; }
 //         printf(oneline);
         char tmp[255];
-        sscanf(oneline, "%s", tmp);
+        char tmp2[255];
+        sscanf(oneline, "%s %s", tmp, tmp2);
         if (strcmp(tmp, "usemtl") == 0) {
-//             printf("Test: %s\n", tmp);
-            // Material number
+            printf("Material: %s\n", tmp2);
+            mtls[loop] = tmp2;
         }
         else if (strcmp(tmp, "f") == 0) {
             while (faceloop[grouploop] < numface) {
@@ -245,6 +249,7 @@ OBJECT LoadObj(char* objfile) {
     for (int j=0; j<tmpobj.numGroups; j++) {
         tmpobj.groups[j].numIndices = faceloop[j];
         tmpobj.groups[j].Indices = new GLuint[tmpobj.groups[j].numIndices];
+        tmpobj.groups[j].mtlname = mtls[j];
         for (int i=0; i<tmpobj.groups[j].numIndices; i++) {
             tmpobj.groups[j].Indices[i] = face[j][i].v - 1;
         }
@@ -282,11 +287,14 @@ void DrawWorld() {
         
         for (int j=0; j<Objects[i].numGroups; j++) {
             if (i == 2) {
-                glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Objects[i].mtl[j].ambient);
-                glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Objects[i].mtl[j].diffuse);
-                glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Objects[i].mtl[j].specular);
-                glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Objects[i].mtl[j].shininess);
-                glColor3fv(Objects[i].mtl[j].diffuse);
+                int m;
+                if (j == 0) m = 1;
+                else m = 0;
+                glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Objects[i].mtl[m].ambient);
+                glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Objects[i].mtl[m].diffuse);
+                glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Objects[i].mtl[m].specular);
+                glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Objects[i].mtl[m].shininess);
+                glColor3fv(Objects[i].mtl[m].diffuse);
             }
             glDrawElements( GL_QUADS, Objects[i].groups[j].numIndices, GL_UNSIGNED_INT, Objects[i].groups[j].Indices );
         }

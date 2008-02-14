@@ -22,21 +22,25 @@ struct WMaterial {
     GLfloat diffuse[4];
     GLfloat specular[4];
     GLfloat shininess[1];
+    char* name;
 };
 
 struct WGroup {
     GLuint* Indices;
     int numIndices;
+    char* mtlname;
 };
 
 typedef struct tagOBJECT {
     WVector pos;
     WVector rot;
     float angle;
+
     int numGroups;
     WGroup* groups;
     int numMtl;
     WMaterial* mtl;
+    
     WVector* Vertices;
     WVector* Normals;
     int numVertices, numNormals;
