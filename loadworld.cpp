@@ -1,4 +1,3 @@
-//TODO does not parse first one, why?
 #include "main.h"
 
 OBJECT *Objects;
@@ -154,12 +153,16 @@ OBJECT LoadObj(char* objfile) {
     char** mtls;
     mtls = new char*[5]; // TODO replace these 5s with variable!
     for (int i=0; i<5; i++) mtls[i] = new char[256];
+    bool skip = false;
     while (grouploop < numgroup && loop) {
 //         printf("Test: Grouploop: %d\n", grouploop);
         faceloop[grouploop] = 0;
         
         char v1[10], v2[10], v3[10], v4[10];
-        if (readstr(filein,oneline)) { break; }
+        if (skip) skip = false;
+        else {
+            if (readstr(filein,oneline)) { break; }
+        }
 //         printf(oneline);
         char tmp[255];
         char tmp2[255];
@@ -169,8 +172,12 @@ OBJECT LoadObj(char* objfile) {
             printf("mtls[%d]: %s\n", grouploop, mtls[grouploop]);
         }
         else if (strcmp(tmp, "f") == 0) {
+            skip = true;
             while (faceloop[grouploop] < numface) {
-                if (readstr(filein,oneline)) { loop=false; break; }
+                if (skip) skip = false;
+                else {
+                    if (readstr(filein,oneline)) { loop=false; break; }
+                }
 //                 printf("Test: %d : %s", faceloop[grouploop], oneline);
                 sscanf(oneline, "%s %s", tmp, tmp2);
 //                 printf("Test: Faceloop 2\n");
@@ -219,8 +226,9 @@ OBJECT LoadObj(char* objfile) {
                 }
                 else if (faceloop[grouploop] != 0) {
                     if (strcmp(tmp, "usemtl") == 0) {
-                        strcpy(mtls[grouploop+1], tmp2);
-                        printf("mtls[%d]: %s\n", grouploop+1, mtls[grouploop+1]);
+                        // strcpy(mtls[grouploop+1], tmp2);
+                        // printf("mtls[%d]: %s\n", grouploop+1, mtls[grouploop+1]);
+                        skip = true;
                     } // TODO Move this messy hack
                     break;
                 }
