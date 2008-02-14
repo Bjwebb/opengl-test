@@ -38,11 +38,12 @@ short readstr(FILE *f, char *string) {                 // Read In A String
 }
 
 OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
+    printf("### %d\n", tmpobj.numMtl);
     FILE *filein;                           // File To Work With
     filein = fopen(mtlfile, "rt");                // Open Our File
-    tmpobj.mtl = new WMaterial[2];
+    tmpobj.mtl = new WMaterial[tmpobj.numMtl];
     bool content = false;
-    for (int i=0; i<2; i++) {
+    for (int i=0; i<tmpobj.numMtl; i++) {
         float ar=0, ag=0, ab=0, dr=0, dg=0, db=0, sr=0, sg=0, sb=0;
         float ns=0;
         while (true) {
@@ -101,7 +102,8 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
     return tmpobj;
 }
 
-OBJECT LoadObj(char* objfile) {    
+OBJECT LoadObj(char* objfile, int bits) {
+    printf("*** %d", bits);
     FILE *filein;                           // File To Work With
     filein = fopen(objfile, "rt");                // Open Our File
     
@@ -115,9 +117,9 @@ OBJECT LoadObj(char* objfile) {
         mtllib = tmp2;
     }
     
-    int numvert = 4000;
+    int numvert = 10000;
     char x[10], y[10], z[10];
-    int numface = 4*4000;
+    int numface = 4*10000;
 
 //     printf("Test 1\n");
 
@@ -136,8 +138,11 @@ OBJECT LoadObj(char* objfile) {
             vertex[vertloop].z = atof(z);
             vertloop++;
         }
-        else if (vertloop != 0) { break; }
+        //else if (vertloop != 0) { break; }
     }
+
+    fclose(filein);
+    filein = fopen(objfile, "rt"); 
 
     VERTEX* normal = new VERTEX[numvert];
     int normloop = 0;
@@ -153,24 +158,25 @@ OBJECT LoadObj(char* objfile) {
             normal[normloop].z = atof(z);
             normloop++;
         }
-        else if (normloop != 0) { break; }
+        //else if (normloop != 0) { break; }
     }
-      fclose(filein);
-      filein = fopen(objfile, "rt"); 
+    
+    fclose(filein);
+    filein = fopen(objfile, "rt"); 
     
 //     printf("Test 2\n");
     
-    int numgroup = 5;
+    int numgroup = 100; //TODO wtf
     FACE** face;
-    face = new FACE*[5];
-    for (int i=0; i<5; i++) face[i] = new FACE[1600];
+    face = new FACE*[100];
+    for (int i=0; i<100; i++) face[i] = new FACE[40000]; //TODO wtf
     int grouploop = 0;
     int faceloop[numgroup];
 //     printf("Test 3\n");
     bool loop = true;
     char** mtls;
-    mtls = new char*[5]; // TODO replace these 5s with variable!
-    for (int i=0; i<5; i++) mtls[i] = new char[256];
+    mtls = new char*[100]; // TODO replace these 100s with variable!
+    for (int i=0; i<100; i++) mtls[i] = new char[256];
     bool skip = false;
     while (grouploop < numgroup && loop) {
 //         printf("Test: Grouploop: %d\n", grouploop);
@@ -256,10 +262,11 @@ OBJECT LoadObj(char* objfile) {
 //     printf("Test A\n");
 
     OBJECT tmpobj;
+    tmpobj.numMtl = bits;
     tmpobj.numGroups = grouploop;
     tmpobj.numVertices = vertloop;
     tmpobj.numNormals = normloop;
-    printf("%d %d %d\n", tmpobj.numGroups, tmpobj.numVertices, tmpobj.numNormals);
+    printf("*********** Groups: %d Vertices: %d Normals: %d\n", tmpobj.numGroups, tmpobj.numVertices, tmpobj.numNormals);
     tmpobj.Vertices = new WVector[tmpobj.numVertices];
     tmpobj.Normals = new WVector[tmpobj.numNormals];
     
@@ -288,16 +295,16 @@ OBJECT LoadObj(char* objfile) {
     }
     
 //     printf("Test C\n");
-    
+    printf("Test A\n");
     tmpobj = LoadMtl(tmp2, tmpobj);
+    printf("Test Z\n");
 //     printf("Test D\n");
 
     printf("asdf %d\n", tmpobj.ismtl);
     if (tmpobj.ismtl) {
-        printf("### W00t ###");
         for (int j=0; j<tmpobj.numGroups; j++) {
             tmpobj.groups[j].mtl = -1;
-            printf("\n%s\n", tmpobj.groups[j].mtlname);
+            printf("\n%s :O %d\n", tmpobj.groups[j].mtlname, tmpobj.numMtl);
             for (int c=0; c<tmpobj.numMtl; c++) {
                 printf("%s\n", tmpobj.mtl[c].name);
                 if (strcmp(tmpobj.groups[j].mtlname, tmpobj.mtl[c].name) == 0) {
@@ -383,11 +390,12 @@ void SetupWorld(char* worldfile) {
         sscanf(oneline, "%s", tmp1);
 //         printf("%s", oneline);
         if (strcmp(tmp1, "Object") == 0) {
-            float x=0,y=0,z=0,rx=0,ry=0,rz=0,rangle=0;
-             printf("Count: %d\n", sscanf(oneline, "%s %s %f %f %f %f %f %f", tmp1, tmp2, &x, &y, &z, &rx, &ry, &rz));
+            float x=0,y=0,z=0,rx=0,ry=0,rz=0;
+            int bits=0;
+             printf("Count: %d\n", sscanf(oneline, "%s %s %f %f %f %f %f %f %d", tmp1, tmp2, &x, &y, &z, &rx, &ry, &rz, &bits));
 //             printf("Test: %s\n", tmp1);
 //             printf("Object: %s\n", tmp2);
-            Objects[i] = LoadObj(tmp2);
+            Objects[i] = LoadObj(tmp2, bits);
 //             printf("%f %f %f\n\n", x, y, z);
 //             printf("%f %f %f\n\n", rx, ry, rz);
             Objects[i].pos.x = x;

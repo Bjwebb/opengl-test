@@ -228,7 +228,7 @@ void draw_screen( void ) {
     glEnd( );
 
     glLoadIdentity(); you_compensate();
-    glTranslatef( 0.0f, 1.0f, 6.0f );
+    glTranslatef( 0.0f, 3.0f, 0.0f );
     draw_cube();
  
     glLoadIdentity(); you_compensate();
