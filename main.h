@@ -24,15 +24,22 @@ struct WMaterial {
     GLfloat shininess[1];
 };
 
+struct WGroup {
+    GLuint* Indices;
+    int numIndices;
+};
+
 typedef struct tagOBJECT {
-    WMaterial mtl;
     WVector pos;
     WVector rot;
     float angle;
-    GLuint* Indices;
+    int numGroups;
+    WGroup* groups;
+    int numMtl;
+    WMaterial* mtl;
     WVector* Vertices;
     WVector* Normals;
-    int numIndices, numVertices, numNormals;
+    int numVertices, numNormals;
 } OBJECT;
 
 void you_compensate();
