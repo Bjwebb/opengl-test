@@ -17,7 +17,15 @@ struct WVector
 //     GLfloat r,g,b;
 };
 
+struct WMaterial {
+    GLfloat ambient[4];
+    GLfloat diffuse[4];
+    GLfloat specular[4];
+    GLfloat shininess[1];
+};
+
 typedef struct tagOBJECT {
+    WMaterial mtl;
     WVector pos;
     WVector rot;
     float angle;

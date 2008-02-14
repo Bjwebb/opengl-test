@@ -23,10 +23,69 @@ short readstr(FILE *f, char *string) {                 // Read In A String
     return 0;
 }
 
-OBJECT LoadObj(char* worldfile) {    
+OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
     FILE *filein;                           // File To Work With
-    filein = fopen(worldfile, "rt");                // Open Our File
+    filein = fopen(mtlfile, "rt");                // Open Our File
+    float ar=0, ag=0, ab=0, dr=0, dg=0, db=0, sr=0, sg=0, sb=0;
+    float ns=0;
+    while (true) {
+        char oneline[255];
+        char t1[255], t2[255], t3[255], t4[255];
+        float f2=0, f3=0, f4=0;
+        if (readstr(filein,oneline)) break;
+        int num = sscanf(oneline, "%s %f %f %f", t1, &f2, &f3, &f4);
+        // if (strcmp(t1,"newmtl")) printf(t2);
+        if (strcmp(t1,"Ka") == 0) {
+            ar = f2;
+            ag = f3;
+            ab = f4;
+        }
+        if (strcmp(t1,"Kd") == 0) {
+            dr = f2;
+            dg = f3;
+            db = f4;
+        }
+        if (strcmp(t1,"Ks") == 0) {
+            sr = f2;
+            sg = f3;
+            sb = f4;
+        }
+        if (strcmp(t1,"Ns") == 0) {
+            ns = f2;
+        }
+    }
+    fclose(filein);
+    tmpobj.mtl.ambient[0] = ar;
+    tmpobj.mtl.ambient[1] = ag;
+    tmpobj.mtl.ambient[2] = ab;
+    tmpobj.mtl.ambient[3] = 1;
+    tmpobj.mtl.diffuse[0] = dr;
+    tmpobj.mtl.diffuse[1] = dg;
+    tmpobj.mtl.diffuse[2] = db;
+    tmpobj.mtl.diffuse[3] = 1;
+    tmpobj.mtl.specular[0] = sr;
+    tmpobj.mtl.specular[1] = sg;
+    tmpobj.mtl.specular[2] = sb;
+    tmpobj.mtl.specular[3] = 1;
+    tmpobj.mtl.shininess[0] = ns;
+    
+    return tmpobj;
+}
 
+OBJECT LoadObj(char* objfile) {    
+    FILE *filein;                           // File To Work With
+    filein = fopen(objfile, "rt");                // Open Our File
+    
+    char* mtllib;
+    char oneline[255];
+    char tmp1[255];
+    char tmp2[255];
+    readstr(filein,oneline);
+    sscanf(oneline, "%s %s", tmp1, tmp2);
+    if (strcmp(tmp1, "mtllib") == 0) {
+        mtllib = tmp2;
+    }
+    
     int numvert = 4000;
     char x[10], y[10], z[10];
     int numface = 4*4000;
@@ -35,13 +94,11 @@ OBJECT LoadObj(char* worldfile) {
     int vertloop = 0;
     while (vertloop < numvert)        // Loop Through All The Vertices
     {
-        char oneline[255];
         if (readstr(filein,oneline)) break;
         char tmp[255];
         sscanf(oneline, "%s ", tmp);
         if (strcmp(tmp, "v") == 0) {
             sscanf(oneline, "%s %s %s %s", tmp, &x, &y, &z);
-//             printf("%d %s: %s", vertloop, tmp, oneline);
         // Store Values Into Respective Vertices
             vertex[vertloop].x = atof(x);
             vertex[vertloop].y = atof(y);
@@ -54,13 +111,11 @@ OBJECT LoadObj(char* worldfile) {
     VERTEX* normal = new VERTEX[numvert];
     int normloop = 0;
     while (normloop < numvert) {
-        char oneline[255];
         if (readstr(filein,oneline)) break;
         char tmp[255];
         sscanf(oneline, "%s ", tmp);
         if (strcmp(tmp, "vn") == 0) {
             sscanf(oneline, "%s %s %s %s", tmp, &x, &y, &z);
-//             printf("%d %s: %s", normloop, tmp, oneline);
         // Store Values Into Respective Vertices
             normal[normloop].x = atof(x);
             normal[normloop].y = atof(y);
@@ -72,20 +127,18 @@ OBJECT LoadObj(char* worldfile) {
     
     
      fclose(filein);
-     filein = fopen(worldfile, "rt"); 
+     filein = fopen(objfile, "rt"); 
       
     FACE* face = new FACE[numface];
     int faceloop = 0;
     while (faceloop < numface) {
         char v1[10], v2[10], v3[10], v4[10];
-        char oneline[255];
         if (readstr(filein,oneline)) break;
         char tmp[255];
         sscanf(oneline, "%s", tmp);
         if (strcmp(tmp, "f") == 0) {
             if (sscanf(oneline, "%s %s %s %s %s", tmp, &v1, &v2, &v3, &v4) == 4) {
                 strcpy (v4, v3);
-                // printf("Test %s \n", v4);
             }
         // Store Values Into Respective Vertices
             int test1, test2;
@@ -110,7 +163,6 @@ OBJECT LoadObj(char* worldfile) {
                 face[faceloop].v = atoi(v3);
             }
             faceloop++;
-//             printf("%s\n", v4);
             if (sscanf(v4, "%d//%d", &test1, &test2) == 2) {
                 face[faceloop].v = test1;
             }
@@ -122,9 +174,9 @@ OBJECT LoadObj(char* worldfile) {
                 v4[i] = '0';
             }
             v4[9] = '\0'; // TODO make this more pretty; moreover, why do they carry on?
-            printf("Face: %d %d %d %d\n", face[faceloop-4].v, face[faceloop-3].v, face[faceloop-2].v, face[faceloop-1].v);
+//             printf("Face: %d %d %d %d\n", face[faceloop-4].v, face[faceloop-3].v, face[faceloop-2].v, face[faceloop-1].v);
         }
-        else if (faceloop != 0) { break; }
+        //else if (faceloop != 0) { break; }
     }
     fclose(filein);
     
@@ -153,6 +205,8 @@ OBJECT LoadObj(char* worldfile) {
     for (int i=0; i<tmpobj.numIndices; i++) {
         tmpobj.Indices[i] = face[i].v - 1;
     }
+    
+    tmpobj = LoadMtl(tmp2, tmpobj);
 //     int evil = 0;
 //     int asfd = 8/evil;
     return tmpobj;
@@ -165,7 +219,26 @@ void DrawWorld() {
         glRotatef(Objects[i].rot.x, 1, 0, 0);
         glRotatef(Objects[i].rot.y, 0, 1, 0);
         glRotatef(Objects[i].rot.z, 0, 0, 1);
-        glColor3fv( blue ); // TODO
+        
+        if (i == 2) {
+            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, Objects[i].mtl.ambient);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, Objects[i].mtl.diffuse);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, Objects[i].mtl.specular);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, Objects[i].mtl.shininess);
+            glColor3fv(Objects[i].mtl.diffuse);
+        }
+        else {
+            GLfloat a[] = {0,0,0,1};
+            GLfloat d[] = {0.8f,0.8f,0.8f,1};
+            GLfloat s[] = {0.5f,0.5f,0.5f};
+            GLfloat sh[] = {100};
+            glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, a);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, d);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, s);
+            glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, sh);
+            glColor3fv( blue );
+        }
+
         glVertexPointer( 3, GL_FLOAT, sizeof(WVector), Objects[i].Vertices);
         glNormalPointer( GL_FLOAT, sizeof(WVector), Objects[i].Normals );
         glDrawElements( GL_QUADS, Objects[i].numIndices, GL_UNSIGNED_INT, Objects[i].Indices );
@@ -182,24 +255,24 @@ void SetupWorld(char* worldfile) {
     char tmp2[255];
     readstr(filein,oneline);
     sscanf(oneline, "%s %s", tmp1, tmp2);
-    printf("numObjects: %s\n", tmp2);
+//     printf("numObjects: %s\n", tmp2);
     if (strcmp(tmp1, "numObjects") == 0) numObjects = atoi(tmp2);
-    printf("numObjects: %d\n\n", numObjects);
+//     printf("numObjects: %d\n\n", numObjects);
     Objects = new OBJECT[numObjects];
     
     int i = 0;
     while (i < numObjects) {
         if (readstr(filein,oneline)) break;
         sscanf(oneline, "%s", tmp1);
-        printf("%s", oneline);
+//         printf("%s", oneline);
         if (strcmp(tmp1, "Object") == 0) {
             float x=0,y=0,z=0,rx=0,ry=0,rz=0,rangle=0;
-            printf("Count: %d\n", sscanf(oneline, "%s %s %f %f %f %f %f %f", tmp1, tmp2, &x, &y, &z, &rx, &ry, &rz));
-            printf("Test: %s\n", tmp1);
-            printf("Object: %s\n", tmp2);
+             printf("Count: %d\n", sscanf(oneline, "%s %s %f %f %f %f %f %f", tmp1, tmp2, &x, &y, &z, &rx, &ry, &rz));
+//             printf("Test: %s\n", tmp1);
+//             printf("Object: %s\n", tmp2);
             Objects[i] = LoadObj(tmp2);
-            printf("%f %f %f\n\n", x, y, z);
-            printf("%f %f %f\n\n", rx, ry, rz);
+//             printf("%f %f %f\n\n", x, y, z);
+//             printf("%f %f %f\n\n", rx, ry, rz);
             Objects[i].pos.x = x;
             Objects[i].pos.y = y;
             Objects[i].pos.z = z;

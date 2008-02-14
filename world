@@ -1,8 +1,9 @@
 # WebbWorld spec v0.0.2
 # This world created by Benjamin Webb (2008)
 
-numObjects 3
-#Object filename    x       y       z       rx  ry  rz
-Object  monkey.obj  0       1       -6      90  0   0
-Object  monkey.obj  -3      1       -3      90  0   -90
-Object  btree.obj   -6      0       -6      90   0   0
+numObjects 4
+#Object filename        x       y       z       rx  ry  rz
+Object  monkey.obj      0       1       -6      90  0   0
+Object  monkey.obj      -3      1       -3      90  0   -90
+Object  tree.obj        6       0       -6      0   0   0
+Object  toadstool.obj   -6      2.1     -6      0   0   0
