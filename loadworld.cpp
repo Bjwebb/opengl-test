@@ -38,7 +38,6 @@ short readstr(FILE *f, char *string) {                 // Read In A String
 }
 
 OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
-    printf("### %d\n", tmpobj.numMtl);
     FILE *filein;                           // File To Work With
     filein = fopen(mtlfile, "rt");                // Open Our File
     tmpobj.mtl = new WMaterial[tmpobj.numMtl];
@@ -47,7 +46,6 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
         float ar=0, ag=0, ab=0, dr=0, dg=0, db=0, sr=0, sg=0, sb=0;
         float ns=0;
         while (true) {
-//            printf("Test\n");
             char oneline[255];
             char t1[255], t2[255], t3[255], t4[255];
             float f2=0, f3=0, f4=0;
@@ -56,7 +54,6 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
             int num = sscanf(oneline, "%s %f %f %f", t1, &f2, &f3, &f4);
             if (strcmp(t1,"newmtl") == 0) {
                 sscanf(oneline, "%s %s", t2, t3);
-                printf("Material: %s\n", t3);
                 tmpobj.mtl[i].name = new char[255];
                 strcpy(tmpobj.mtl[i].name, t3);
             }
@@ -95,7 +92,6 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
         tmpobj.mtl[i].specular[2] = sb;
         tmpobj.mtl[i].specular[3] = 1;
         tmpobj.mtl[i].shininess[0] = ns;
-        printf("$ %d\n", content);
         tmpobj.ismtl = content;
     }
     fclose(filein);
@@ -103,7 +99,6 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
 }
 
 OBJECT LoadObj(char* objfile, int bits) {
-    printf("*** %d", bits);
     FILE *filein;                           // File To Work With
     filein = fopen(objfile, "rt");                // Open Our File
     
@@ -121,7 +116,6 @@ OBJECT LoadObj(char* objfile, int bits) {
     char x[10], y[10], z[10];
     int numface = 4*10000;
 
-//     printf("Test 1\n");
 
     VERTEX* vertex = new VERTEX[numvert];
     int vertloop = 0;
@@ -164,7 +158,6 @@ OBJECT LoadObj(char* objfile, int bits) {
     fclose(filein);
     filein = fopen(objfile, "rt"); 
     
-//     printf("Test 2\n");
     
     int numgroup = 100; //TODO wtf
     FACE** face;
@@ -172,7 +165,6 @@ OBJECT LoadObj(char* objfile, int bits) {
     for (int i=0; i<100; i++) face[i] = new FACE[40000]; //TODO wtf
     int grouploop = 0;
     int faceloop[numgroup];
-//     printf("Test 3\n");
     bool loop = true;
     char** mtls;
     mtls = new char*[100]; // TODO replace these 100s with variable!
@@ -193,7 +185,6 @@ OBJECT LoadObj(char* objfile, int bits) {
         sscanf(oneline, "%s %s", tmp, tmp2);
         if (strcmp(tmp, "usemtl") == 0) {
             strcpy(mtls[grouploop], tmp2);
-            printf("mtls[%d]: %s\n", grouploop, mtls[grouploop]);
         }
         else if (strcmp(tmp, "f") == 0) {
             skip = true;
@@ -255,7 +246,6 @@ OBJECT LoadObj(char* objfile, int bits) {
                 }
             }
             grouploop++;
-            printf("%d %d\n", grouploop, loop);
         }
     }
     fclose(filein);
@@ -266,7 +256,6 @@ OBJECT LoadObj(char* objfile, int bits) {
     tmpobj.numGroups = grouploop;
     tmpobj.numVertices = vertloop;
     tmpobj.numNormals = normloop;
-    printf("*********** Groups: %d Vertices: %d Normals: %d\n", tmpobj.numGroups, tmpobj.numVertices, tmpobj.numNormals);
     tmpobj.Vertices = new WVector[tmpobj.numVertices];
     tmpobj.Normals = new WVector[tmpobj.numNormals];
     
@@ -288,31 +277,23 @@ OBJECT LoadObj(char* objfile, int bits) {
         tmpobj.groups[j].numIndices = faceloop[j];
         tmpobj.groups[j].Indices = new GLuint[tmpobj.groups[j].numIndices];
         tmpobj.groups[j].mtlname = mtls[j];
-        printf("* %s\n", tmpobj.groups[j].mtlname);
         for (int i=0; i<tmpobj.groups[j].numIndices; i++) {
             tmpobj.groups[j].Indices[i] = face[j][i].v - 1;
         }
     }
     
 //     printf("Test C\n");
-    printf("Test A\n");
     tmpobj = LoadMtl(tmp2, tmpobj);
-    printf("Test Z\n");
 //     printf("Test D\n");
 
-    printf("asdf %d\n", tmpobj.ismtl);
     if (tmpobj.ismtl) {
         for (int j=0; j<tmpobj.numGroups; j++) {
             tmpobj.groups[j].mtl = -1;
-            printf("\n%s :O %d\n", tmpobj.groups[j].mtlname, tmpobj.numMtl);
             for (int c=0; c<tmpobj.numMtl; c++) {
-                printf("%s\n", tmpobj.mtl[c].name);
                 if (strcmp(tmpobj.groups[j].mtlname, tmpobj.mtl[c].name) == 0) {
                     tmpobj.groups[j].mtl = c;
-                    printf("Success!");
                 }
             }
-            printf("'m' = %d\n", tmpobj.groups[j].mtl);
         }
     }
 
@@ -392,12 +373,8 @@ void SetupWorld(char* worldfile) {
         if (strcmp(tmp1, "Object") == 0) {
             float x=0,y=0,z=0,rx=0,ry=0,rz=0;
             int bits=0;
-             printf("Count: %d\n", sscanf(oneline, "%s %s %f %f %f %f %f %f %d", tmp1, tmp2, &x, &y, &z, &rx, &ry, &rz, &bits));
-//             printf("Test: %s\n", tmp1);
-//             printf("Object: %s\n", tmp2);
+            sscanf(oneline, "%s %s %f %f %f %f %f %f %d", tmp1, tmp2, &x, &y, &z, &rx, &ry, &rz, &bits);
             Objects[i] = LoadObj(tmp2, bits);
-//             printf("%f %f %f\n\n", x, y, z);
-//             printf("%f %f %f\n\n", rx, ry, rz);
             Objects[i].pos.x = x;
             Objects[i].pos.y = y;
             Objects[i].pos.z = z;
