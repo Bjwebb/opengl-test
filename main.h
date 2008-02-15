@@ -57,7 +57,7 @@ float getWorldAngle();
 void DrawWorld();
 
 void boundCreate(OBJECT* objs, int num);
-bool boundCheck(float minX, float maxX, float minZ, float maxZ);
+int boundCheck(float minX, float maxX, float minZ, float maxZ);
 void wallCreate(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
 bool wallCheck(float minX, float maxX, float minZ, float maxZ);
 

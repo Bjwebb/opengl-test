@@ -38,13 +38,16 @@ void boundCreate(OBJECT* objs, int num) {
     }
 }
 
-bool boundCheck(float minX, float maxX, float minZ, float maxZ) {
+int boundCheck(float minX, float maxX, float minZ, float maxZ) {
     for (int i=0; i<boxes; i++) {
         if (    maxX > boxArray[i].min.x &&
                 minX < boxArray[i].max.x &&
                 maxZ > boxArray[i].min.z &&
                 minZ < boxArray[i].max.z ) {
-            return false;
+            if (i==6)
+                return 12;
+            else
+                return false;
         }
     }
     return wallCheck(minX, maxX, minZ, maxZ);

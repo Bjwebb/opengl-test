@@ -23,7 +23,7 @@ static GLint T0     = 0;
 static GLint Frames = 0;
 GLfloat fps = 500;
 
-bool debug = true;
+bool debug = false;
 
 void quit_app( int code ) {
     // Return to previous resolution etc.
@@ -176,7 +176,8 @@ void draw_screen( void ) {
     
     float you_x_new = you_x - ( (float)sin(you_angle*piover180) * you_velocity * you_dir ) / fps;
     float you_z_new = you_z + ( (float)cos(you_angle*piover180) * you_velocity * you_dir ) / fps;
-    if (boundCheck(you_x_new-1, you_x_new+1, you_z_new-2, you_z_new+2)) {
+    int joel = boundCheck(you_x_new-1, you_x_new+1, you_z_new-2, you_z_new+2);
+    if (joel == 1) {
         you_x = you_x_new;
         you_z = you_z_new;
     }
@@ -284,6 +285,17 @@ void draw_screen( void ) {
         glPrint("X: %f   Z: %f   Angle: %f   Velocity: %f", you_x, you_z, you_angle, you_velocity);
         glRasterPos2f(-0.7f, 0.5f);
         glPrint("FPS: %f", fps);
+    }
+    
+    if (joel == 12) {
+        glLoadIdentity(); glTranslatef(0, 0, -1);
+        glColor3f(1, 1, 1);
+        glRasterPos2f(-0.7f, 0.5f);
+        glPrint("To Joel,");
+        glRasterPos2f(-0.7f, 0.4f);
+        glPrint("Happy 12th Birthday,");
+        glRasterPos2f(-0.7f, 0.3f);
+        glPrint("From Ben");
     }
     
     Frames++;
