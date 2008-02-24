@@ -1,7 +1,9 @@
 #include "main.h"
 
 OBJECT *Objects;
+WALL *Walls;
 int numObjects;
+int numWalls;
 
 float world_x = 0;
 float world_z = 0;
@@ -38,7 +40,7 @@ short readstr(FILE *f, char *string) {                 // Read In A String
 }
 
 OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
-    printf("### %d\n", tmpobj.numMtl);
+//     printf("### %d\n", tmpobj.numMtl);
     FILE *filein;                           // File To Work With
     filein = fopen(mtlfile, "rt");                // Open Our File
     tmpobj.mtl = new WMaterial[tmpobj.numMtl];
@@ -47,7 +49,6 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
         float ar=0, ag=0, ab=0, dr=0, dg=0, db=0, sr=0, sg=0, sb=0;
         float ns=0;
         while (true) {
-//            printf("Test\n");
             char oneline[255];
             char t1[255], t2[255], t3[255], t4[255];
             float f2=0, f3=0, f4=0;
@@ -56,7 +57,7 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
             int num = sscanf(oneline, "%s %f %f %f", t1, &f2, &f3, &f4);
             if (strcmp(t1,"newmtl") == 0) {
                 sscanf(oneline, "%s %s", t2, t3);
-                printf("Material: %s\n", t3);
+//                 printf("Material: %s\n", t3);
                 tmpobj.mtl[i].name = new char[255];
                 strcpy(tmpobj.mtl[i].name, t3);
             }
@@ -95,7 +96,7 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
         tmpobj.mtl[i].specular[2] = sb;
         tmpobj.mtl[i].specular[3] = 1;
         tmpobj.mtl[i].shininess[0] = ns;
-        printf("$ %d\n", content);
+//         printf("$ %d\n", content);
         tmpobj.ismtl = content;
     }
     fclose(filein);
@@ -103,7 +104,7 @@ OBJECT LoadMtl(char* mtlfile, OBJECT tmpobj) {
 }
 
 OBJECT LoadObj(char* objfile, int bits) {
-    printf("*** %d", bits);
+//     printf("*** %d", bits);
     FILE *filein;                           // File To Work With
     filein = fopen(objfile, "rt");                // Open Our File
     
@@ -120,8 +121,6 @@ OBJECT LoadObj(char* objfile, int bits) {
     int numvert = 10000;
     char x[10], y[10], z[10];
     int numface = 4*10000;
-
-//     printf("Test 1\n");
 
     VERTEX* vertex = new VERTEX[numvert];
     int vertloop = 0;
@@ -164,22 +163,18 @@ OBJECT LoadObj(char* objfile, int bits) {
     fclose(filein);
     filein = fopen(objfile, "rt"); 
     
-//     printf("Test 2\n");
-    
     int numgroup = 100; //TODO wtf
     FACE** face;
     face = new FACE*[100];
     for (int i=0; i<100; i++) face[i] = new FACE[40000]; //TODO wtf
     int grouploop = 0;
     int faceloop[numgroup];
-//     printf("Test 3\n");
     bool loop = true;
     char** mtls;
     mtls = new char*[100]; // TODO replace these 100s with variable!
     for (int i=0; i<100; i++) mtls[i] = new char[256];
     bool skip = false;
     while (grouploop < numgroup && loop) {
-//         printf("Test: Grouploop: %d\n", grouploop);
         faceloop[grouploop] = 0;
         
         char v1[10], v2[10], v3[10], v4[10];
@@ -193,7 +188,7 @@ OBJECT LoadObj(char* objfile, int bits) {
         sscanf(oneline, "%s %s", tmp, tmp2);
         if (strcmp(tmp, "usemtl") == 0) {
             strcpy(mtls[grouploop], tmp2);
-            printf("mtls[%d]: %s\n", grouploop, mtls[grouploop]);
+//             printf("mtls[%d]: %s\n", grouploop, mtls[grouploop]);
         }
         else if (strcmp(tmp, "f") == 0) {
             skip = true;
@@ -204,22 +199,18 @@ OBJECT LoadObj(char* objfile, int bits) {
                 }
 //                 printf("Test: %d : %s", faceloop[grouploop], oneline);
                 sscanf(oneline, "%s %s", tmp, tmp2);
-//                 printf("Test: Faceloop 2\n");
                 if (strcmp(tmp, "f") == 0) {
                     if (sscanf(oneline, "%s %s %s %s %s", tmp, &v1, &v2, &v3, &v4) == 4) {
                         strcpy (v4, v3);
                     }
                 // Store Values Into Respective Vertices
                     int test1, test2;
-//                     printf("Test: Faceloop 3\n");
                     if (sscanf(v1, "%d//%d", &test1, &test2) == 2) {
-//                         printf("Test: Faceloop \n");
                         face[grouploop][faceloop[grouploop]].v = test1;
                     }
                     else {
                         face[grouploop][faceloop[grouploop]].v = atoi(v1);
                     }
-//                     printf("Test: Faceloop 4\n");
                     faceloop[grouploop]++;
                     if (sscanf(v2, "%d//%d", &test1, &test2) == 2) {
                         face[grouploop][faceloop[grouploop]].v = test1;
@@ -255,11 +246,10 @@ OBJECT LoadObj(char* objfile, int bits) {
                 }
             }
             grouploop++;
-            printf("%d %d\n", grouploop, loop);
+//             printf("%d %d\n", grouploop, loop);
         }
     }
     fclose(filein);
-//     printf("Test A\n");
 
     OBJECT tmpobj;
     tmpobj.numMtl = bits;
@@ -281,43 +271,83 @@ OBJECT LoadObj(char* objfile, int bits) {
         tmpobj.Normals[i].z = normal[i].z;
     }
     
-//     printf("Test B\n");
     
     tmpobj.groups = new WGroup[tmpobj.numGroups];
     for (int j=0; j<tmpobj.numGroups; j++) {
         tmpobj.groups[j].numIndices = faceloop[j];
         tmpobj.groups[j].Indices = new GLuint[tmpobj.groups[j].numIndices];
         tmpobj.groups[j].mtlname = mtls[j];
-        printf("* %s\n", tmpobj.groups[j].mtlname);
+//         printf("* %s\n", tmpobj.groups[j].mtlname);
         for (int i=0; i<tmpobj.groups[j].numIndices; i++) {
             tmpobj.groups[j].Indices[i] = face[j][i].v - 1;
         }
     }
     
-//     printf("Test C\n");
-    printf("Test A\n");
     tmpobj = LoadMtl(tmp2, tmpobj);
-    printf("Test Z\n");
-//     printf("Test D\n");
 
-    printf("asdf %d\n", tmpobj.ismtl);
+//     printf("asdf %d\n", tmpobj.ismtl);
     if (tmpobj.ismtl) {
         for (int j=0; j<tmpobj.numGroups; j++) {
             tmpobj.groups[j].mtl = -1;
-            printf("\n%s :O %d\n", tmpobj.groups[j].mtlname, tmpobj.numMtl);
+//             printf("\n%s :O %d\n", tmpobj.groups[j].mtlname, tmpobj.numMtl);
             for (int c=0; c<tmpobj.numMtl; c++) {
-                printf("%s\n", tmpobj.mtl[c].name);
+//                 printf("%s\n", tmpobj.mtl[c].name);
                 if (strcmp(tmpobj.groups[j].mtlname, tmpobj.mtl[c].name) == 0) {
                     tmpobj.groups[j].mtl = c;
-                    printf("Success!");
+//                     printf("Success!");
                 }
             }
-            printf("'m' = %d\n", tmpobj.groups[j].mtl);
+//             printf("'m' = %d\n", tmpobj.groups[j].mtl);
         }
     }
 
 
     return tmpobj;
+}
+
+//TODO do this only once
+void DrawWall(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+    int numIndices = 8;
+    int numVertices = 4;
+    WVector* Vertices = new WVector[numVertices];
+    Vertices[0].x = maxX;
+    Vertices[0].y = maxY;
+    Vertices[0].z = maxZ;
+    Vertices[1].x = minX;
+    Vertices[1].y = maxY;
+    Vertices[1].z = minZ;
+    Vertices[2].x = minX;
+    Vertices[2].y = minY;
+    Vertices[2].z = minZ;
+    Vertices[3].x = maxX;
+    Vertices[3].y = minY;
+    Vertices[3].z = maxZ;
+    GLfloat* Normals = new GLfloat[numVertices*3];
+//     Normals[0] = 0;
+//     Normals[1] = -1;
+//     Normals[2] = 0;
+//     Normals[3] = 0;
+//     Normals[4] = -1;
+//     Normals[5] = 0;
+//     Normals[6] = 0;
+//     Normals[7] = -1;
+//     Normals[8] = 0;
+//     Normals[9] = 0;
+//     Normals[10] = -1;
+//     Normals[11] = 0;
+    GLuint* Indices = new GLuint[numIndices];
+    Indices[0] = 0;
+    Indices[1] = 1;
+    Indices[2] = 2;
+    Indices[3] = 3;
+    Indices[4] = 3;
+    Indices[5] = 2;
+    Indices[6] = 1;
+    Indices[7] = 0;
+    glColor3fv( green );
+    glNormalPointer( GL_FLOAT, sizeof(WVector), Normals);
+    glVertexPointer( 3, GL_FLOAT, sizeof(WVector), Vertices);
+    glDrawElements( GL_QUADS, numIndices, GL_UNSIGNED_INT, Indices );
 }
 
 void DrawWorld() {
@@ -356,6 +386,11 @@ void DrawWorld() {
             glDrawElements( GL_QUADS, Objects[i].groups[j].numIndices, GL_UNSIGNED_INT, Objects[i].groups[j].Indices );
         }
     }
+    
+    glLoadIdentity(); you_compensate();
+    for (int i=0; i<numWalls; i++) {
+        DrawWall(Walls[i].min.x, Walls[i].min.y, Walls[i].min.z, Walls[i].max.x, Walls[i].max.y, Walls[i].max.z);
+    }
     return;
 }
 
@@ -375,40 +410,64 @@ void SetupWorld(char* worldfile) {
     while (true) {
         readstr(filein,oneline);
         sscanf(oneline, "%s %s", tmp1, tmp2);
-        if (strcmp(tmp1, "numObjects") == 0) numObjects = atoi(tmp2);
-        if (strcmp(tmp1, "X") == 0) world_x = atoi(tmp2);
-        if (strcmp(tmp1, "Z") == 0) world_z = atoi(tmp2);
-        if (strcmp(tmp1, "Angle") == 0) world_angle = atoi(tmp2);
-        if (strcmp(tmp1, "endVar") == 0) break;
+        if (strcmp(tmp1, "numWalls") == 0) numWalls = atoi(tmp2);
+        else if (strcmp(tmp1, "numObjects") == 0) numObjects = atoi(tmp2);
+        else if (strcmp(tmp1, "X") == 0) world_x = atoi(tmp2);
+        else if (strcmp(tmp1, "Z") == 0) world_z = atoi(tmp2);
+        else if (strcmp(tmp1, "Angle") == 0) world_angle = atoi(tmp2);
+        else if (strcmp(tmp1, "endVar") == 0) break;
     }
-
-    Objects = new OBJECT[numObjects];
     
-    int i = 0;
-    while (i < numObjects) {
+    while (true) {
         if (readstr(filein,oneline)) break;
         sscanf(oneline, "%s", tmp1);
-//         printf("%s", oneline);
-        if (strcmp(tmp1, "Object") == 0) {
-            float x=0,y=0,z=0,rx=0,ry=0,rz=0;
-            int bits=0;
-             printf("Count: %d\n", sscanf(oneline, "%s %s %f %f %f %f %f %f %d", tmp1, tmp2, &x, &y, &z, &rx, &ry, &rz, &bits));
-//             printf("Test: %s\n", tmp1);
-//             printf("Object: %s\n", tmp2);
-            Objects[i] = LoadObj(tmp2, bits);
-//             printf("%f %f %f\n\n", x, y, z);
-//             printf("%f %f %f\n\n", rx, ry, rz);
-            Objects[i].pos.x = x;
-            Objects[i].pos.y = y;
-            Objects[i].pos.z = z;
-            Objects[i].rot.x = rx;
-            Objects[i].rot.y = ry;
-            Objects[i].rot.z = rz;
-            i++;
+        if (strcmp(tmp1, "Objects") == 0) {
+            Objects = new OBJECT[numObjects];
+            int i = 0;
+            while (i < numObjects) {
+                if (readstr(filein,oneline)) break;
+                sscanf(oneline, "%s", tmp1);
+                if (strcmp(tmp1, "Object") == 0) {
+                    float x=0,y=0,z=0,rx=0,ry=0,rz=0;
+                    int bits=0;
+                    sscanf(oneline, "%s %s %f %f %f %f %f %f %d", tmp1, tmp2, &x, &y, &z, &rx, &ry, &rz, &bits);
+                    Objects[i] = LoadObj(tmp2, bits);
+                    Objects[i].pos.x = x;
+                    Objects[i].pos.y = y;
+                    Objects[i].pos.z = z;
+                    Objects[i].rot.x = rx;
+                    Objects[i].rot.y = ry;
+                    Objects[i].rot.z = rz;
+                    i++;
+                }
+                else if (strcmp(tmp1, "endObjects") == 0) { break; }
+            }
         }
-        else if (i != 0) { break; }
+        else if (strcmp(tmp1, "Walls") == 0) {
+            Walls = new WALL[numWalls];
+            int i = 0;
+            printf("numWalls: %d\n", numWalls);
+            while (i < numWalls) {
+                if (readstr(filein,oneline)) break;
+                sscanf(oneline, "%s", tmp1);
+                if (strcmp(tmp1, "Wall") == 0) {
+                    float lx=0,ly=0,lz=0,bx=0,by=0,bz=0;
+                    sscanf(oneline, "%s %f %f %f %f %f %f", tmp1, &lx, &ly, &lz, &bx, &by, &bz);
+                    Walls[i].min.x = lx;
+                    Walls[i].min.y = ly;
+                    Walls[i].min.z = lz;
+                    Walls[i].max.x = bx;
+                    Walls[i].max.y = by;
+                    Walls[i].max.z = bz;
+                    printf("Wall %d: %f %f %f - %f %f %f \n", i, Walls[i].min.x, Walls[i].min.y, Walls[i].min.z, Walls[i].max.x, Walls[i].max.y, Walls[i].max.z);
+                    i++;
+                }
+                else if (strcmp(tmp1, "endWalls") == 0) { break; }
+            }
+        }
     }
 
     boundCreate(Objects,numObjects);
+    wallsCreate(Walls);
 }
 

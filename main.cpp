@@ -228,17 +228,11 @@ void draw_screen( void ) {
     glVertex3f( 10, 0, -10);
     glEnd( );
 
-    glLoadIdentity(); you_compensate();
-    glTranslatef( 0.0f, 3.0f, 0.0f );
-    draw_cube();
- 
-    glLoadIdentity(); you_compensate();
+// TODO why does this kill it?
+//     glLoadIdentity(); you_compensate();
+//     glTranslatef( 0.0f, 3.0f, 0.0f );
+//     draw_cube();
     
-    wallCreate(-10, 0, 0, 2, 2, 0, 0);
-    wallCreate(-10, 0, 10, 10, 2, 10, 1);
-    wallCreate(-10, 0, -10, 10, 2, -10, 2);
-    wallCreate(-10, 0, -10, -10, 2, 10, 3);
-    wallCreate(10, 0, -10, 10, 2, 10, 4);
     DrawWorld();
     
     if (debug) {
