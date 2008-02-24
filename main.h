@@ -58,7 +58,7 @@ void DrawWorld();
 
 void boundCreate(OBJECT* objs, int num);
 int boundCheck(float minX, float maxX, float minZ, float maxZ);
-void wallCreate(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+void wallCreate(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, int walli);
 bool wallCheck(float minX, float maxX, float minZ, float maxZ);
 
 static GLfloat red[]    = { 255,   0,   0 };

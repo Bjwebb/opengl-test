@@ -176,7 +176,7 @@ void draw_screen( void ) {
     
     float you_x_new = you_x - ( (float)sin(you_angle*piover180) * you_velocity * you_dir ) / fps;
     float you_z_new = you_z + ( (float)cos(you_angle*piover180) * you_velocity * you_dir ) / fps;
-    int joel = boundCheck(you_x_new-1, you_x_new+1, you_z_new-2, you_z_new+2);
+    int joel = boundCheck(you_x_new, you_x_new, you_z_new, you_z_new); // TODO change this to avoid repetition
     if (joel == 1) {
         you_x = you_x_new;
         you_z = you_z_new;
@@ -233,49 +233,12 @@ void draw_screen( void ) {
     draw_cube();
  
     glLoadIdentity(); you_compensate();
-    int numIndices = 8;
-    int numVertices = 4;
-    WVector* Vertices = new WVector[numVertices];
-    Vertices[0].x = 2;
-    Vertices[0].y = 2;
-    Vertices[0].z = 0;
-    Vertices[1].x = -10;
-    Vertices[1].y = 2;
-    Vertices[1].z = 0;
-    Vertices[2].x = -10;
-    Vertices[2].y = 0;
-    Vertices[2].z = 0;
-    Vertices[3].x = 2;
-    Vertices[3].y = 0;
-    Vertices[3].z = 0;
-    GLfloat* Normals = new GLfloat[numVertices*3];
-    Normals[0] = 0;
-    Normals[1] = -1;
-    Normals[2] = 0;
-    Normals[3] = 0;
-    Normals[4] = -1;
-    Normals[5] = 0;
-    Normals[6] = 0;
-    Normals[7] = -1;
-    Normals[8] = 0;
-    Normals[9] = 0;
-    Normals[10] = -1;
-    Normals[11] = 0;
-    GLuint* Indices = new GLuint[numIndices];
-    Indices[0] = 0;
-    Indices[1] = 1;
-    Indices[2] = 2;
-    Indices[3] = 3;
-    Indices[4] = 3;
-    Indices[5] = 2;
-    Indices[6] = 1;
-    Indices[7] = 0;
-    glColor3fv( green );
-    glNormalPointer( GL_FLOAT, sizeof(WVector), Normals);
-    glVertexPointer( 3, GL_FLOAT, sizeof(WVector), Vertices);
-    glDrawElements( GL_QUADS, numIndices, GL_UNSIGNED_INT, Indices );
     
-    wallCreate(-10, 0, 0, 2, 2, 0);
+    wallCreate(-10, 0, 0, 2, 2, 0, 0);
+    wallCreate(-10, 0, 10, 10, 2, 10, 1);
+    wallCreate(-10, 0, -10, 10, 2, -10, 2);
+    wallCreate(-10, 0, -10, -10, 2, 10, 3);
+    wallCreate(10, 0, -10, 10, 2, 10, 4);
     DrawWorld();
     
     if (debug) {
