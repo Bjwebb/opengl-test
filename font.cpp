@@ -1,4 +1,6 @@
+// Fairly basic functions from a tutorial:
 // http://nehe.gamedev.net/data/lessons/lesson.asp?lesson=13
+// If these pose a copyright problem, they should be easy to rewrite
 
 #include "main.h"
 
