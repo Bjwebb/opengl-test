@@ -26,7 +26,6 @@ GLfloat fps = 500;
 bool debug = false;
 
 void quit_app( int code ) {
-    // Return to previous resolution etc.
     SDL_Quit( );
     exit( code );
 }
@@ -47,20 +46,15 @@ void handle_keydown( SDL_keysym* keysym ) {
             break;
         case SDLK_KP_PLUS:
             you_velocity++;
-//             printf("%f\n", you_velocity);
             break;
         case SDLK_KP_MINUS:
             you_velocity--;
-//             printf("%f\n", you_velocity);
             break;
         case SDLK_q:
         case SDLK_ESCAPE:
             quit_app( 0 );
             break;
         case SDLK_l:
-            /* 'l' key was pressed
-            * this toggles the light
-            */
             light = !light;
             if ( !light )
             glDisable( GL_LIGHTING );
@@ -189,17 +183,7 @@ void draw_screen( void ) {
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity(); you_compensate();
     
-    
-    /*glBegin( GL_TRIANGLES );                      // Drawing Using Tricube_angles
-    glColor3fv( green );
-    glVertex3f( 0.0f, 1.0f, 0.0f);
-    glColor3fv( red );
-    glVertex3f(-1.0f,-1.0f, 0.0f);
-    glColor3fv( blue );
-    glVertex3f( 1.0f,-1.0f, 0.0f);
-    glEnd( );*/
-    
-    // Draw Floor
+    // Some nice material/colour settings
     glColorMaterial ( GL_FRONT_AND_BACK, GL_EMISSION ) ;
     glEnable ( GL_COLOR_MATERIAL ) ;
     
@@ -259,7 +243,6 @@ static void setup_opengl( int width, int height ) {
     glLoadIdentity( );
     // TODO Replace this with a call to glFrustum.
     gluPerspective( 60.0, ratio, 1.0, 1024.0 );
-    
     buildFont();
     return;
 }
@@ -292,7 +275,6 @@ int main( int argc, char* argv[] ) {
     }
 
     info = SDL_GetVideoInfo( );
-
     if( !info ) {
         fprintf( stderr, "Video query failed: %s\n",
              SDL_GetError( ) );
@@ -311,7 +293,6 @@ int main( int argc, char* argv[] ) {
     flags = SDL_OPENGL;
     if (fullscreen)
         flags |= SDL_FULLSCREEN;
-
     if( SDL_SetVideoMode( width, height, bpp, flags ) == 0 ) {
         fprintf( stderr, "Video mode set failed: %s\n",
              SDL_GetError( ) );
