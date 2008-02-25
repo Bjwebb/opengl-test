@@ -1,6 +1,7 @@
 #include "main.h"
 
 OBJECT *Objects;
+OBJECT *wallObject;
 WALL *Walls;
 int numObjects;
 int numWalls;
@@ -305,49 +306,48 @@ OBJECT LoadObj(char* objfile, int bits) {
     return tmpobj;
 }
 
-//TODO do this only once
-void DrawWall(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
-    int numIndices = 8;
-    int numVertices = 4;
-    WVector* Vertices = new WVector[numVertices];
-    Vertices[0].x = maxX;
-    Vertices[0].y = maxY;
-    Vertices[0].z = maxZ;
-    Vertices[1].x = minX;
-    Vertices[1].y = maxY;
-    Vertices[1].z = minZ;
-    Vertices[2].x = minX;
-    Vertices[2].y = minY;
-    Vertices[2].z = minZ;
-    Vertices[3].x = maxX;
-    Vertices[3].y = minY;
-    Vertices[3].z = maxZ;
-    GLfloat* Normals = new GLfloat[numVertices*3];
-//     Normals[0] = 0;
-//     Normals[1] = -1;
-//     Normals[2] = 0;
-//     Normals[3] = 0;
-//     Normals[4] = -1;
-//     Normals[5] = 0;
-//     Normals[6] = 0;
-//     Normals[7] = -1;
-//     Normals[8] = 0;
-//     Normals[9] = 0;
-//     Normals[10] = -1;
-//     Normals[11] = 0;
-    GLuint* Indices = new GLuint[numIndices];
-    Indices[0] = 0;
-    Indices[1] = 1;
-    Indices[2] = 2;
-    Indices[3] = 3;
-    Indices[4] = 3;
-    Indices[5] = 2;
-    Indices[6] = 1;
-    Indices[7] = 0;
-    glColor3fv( green );
-    glNormalPointer( GL_FLOAT, sizeof(WVector), Normals);
-    glVertexPointer( 3, GL_FLOAT, sizeof(WVector), Vertices);
-    glDrawElements( GL_QUADS, numIndices, GL_UNSIGNED_INT, Indices );
+OBJECT CreateWall(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+    OBJECT tmpObj;
+    tmpObj.numGroups = 1;
+    tmpObj.groups = new WGroup[1];
+    tmpObj.groups[0].numIndices = 8;
+    tmpObj.numVertices = 4;
+    tmpObj.Vertices = new WVector[tmpObj.numVertices];
+    tmpObj.Vertices[0].x = maxX;
+    tmpObj.Vertices[0].y = maxY;
+    tmpObj.Vertices[0].z = maxZ;
+    tmpObj.Vertices[1].x = minX;
+    tmpObj.Vertices[1].y = maxY;
+    tmpObj.Vertices[1].z = minZ;
+    tmpObj.Vertices[2].x = minX;
+    tmpObj.Vertices[2].y = minY;
+    tmpObj.Vertices[2].z = minZ;
+    tmpObj.Vertices[3].x = maxX;
+    tmpObj.Vertices[3].y = minY;
+    tmpObj.Vertices[3].z = maxZ;
+//    tmpObj.Normals = new GLfloat[tmpObj.numVertices*3];
+//     tmpObj.Normals[0] = 0;
+//     tmpObj.Normals[1] = -1;
+//     tmpObj.Normals[2] = 0;
+//     tmpObj.Normals[3] = 0;
+//     tmpObj.Normals[4] = -1;
+//     tmpObj.Normals[5] = 0;
+//     tmpObj.Normals[6] = 0;
+//     tmpObj.Normals[7] = -1;
+//     tmpObj.Normals[8] = 0;
+//     tmpObj.Normals[9] = 0;
+//     tmpObj.Normals[10] = -1;
+//     tmpObj.Normals[11] = 0;
+    tmpObj.groups[0].Indices = new GLuint[tmpObj.groups[0].numIndices];
+    tmpObj.groups[0].Indices[0] = 0;
+    tmpObj.groups[0].Indices[1] = 1;
+    tmpObj.groups[0].Indices[2] = 2;
+    tmpObj.groups[0].Indices[3] = 3;
+    tmpObj.groups[0].Indices[4] = 3;
+    tmpObj.groups[0].Indices[5] = 2;
+    tmpObj.groups[0].Indices[6] = 1;
+    tmpObj.groups[0].Indices[7] = 0;
+    return tmpObj;
 }
 
 void DrawWorld() {
@@ -389,7 +389,10 @@ void DrawWorld() {
     
     glLoadIdentity(); you_compensate();
     for (int i=0; i<numWalls; i++) {
-        DrawWall(Walls[i].min.x, Walls[i].min.y, Walls[i].min.z, Walls[i].max.x, Walls[i].max.y, Walls[i].max.z);
+        glColor3fv( green );
+//         glNormalPointer( GL_FLOAT, sizeof(WVector), Normals);
+        glVertexPointer( 3, GL_FLOAT, sizeof(WVector), wallObject[i].Vertices);
+        glDrawElements( GL_QUADS, wallObject[i].groups[0].numIndices, GL_UNSIGNED_INT, wallObject[i].groups[0].Indices );
     }
     return;
 }
@@ -467,7 +470,13 @@ void SetupWorld(char* worldfile) {
         }
     }
 
+    // !? Somthing to do once
+    wallObject = new OBJECT[numWalls];
+    for (int i=0; i<numWalls; i++) {
+        wallObject[i] = CreateWall(Walls[i].min.x, Walls[i].min.y, Walls[i].min.z, Walls[i].max.x, Walls[i].max.y, Walls[i].max.z);
+    }
+
     boundCreate(Objects,numObjects);
-    wallsCreate(Walls);
+    wallsCreate(Walls,numWalls);
 }
 
