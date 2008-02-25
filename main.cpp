@@ -243,21 +243,13 @@ void draw_screen( void ) {
 
 static void setup_opengl( int width, int height ) {
     float ratio = (float) width / (float) height;
-    /* Our shading model--Gouraud (smooth). */
     glShadeModel( GL_SMOOTH );
-    /* Culling. */
     glCullFace( GL_BACK );
     glFrontFace( GL_CCW );
     glEnable( GL_CULL_FACE );
     glEnable( GL_DEPTH_TEST );
-    /* Set the clear color. */
     glClearColor( 0, 0, 0, 0 );
-    /* Setup our viewport. */
     glViewport( 0, 0, width, height );
-    /*
-     * Change to the projection matrix and set
-     * our viewing volume.
-     */
     glMatrixMode( GL_PROJECTION );
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
@@ -265,10 +257,7 @@ static void setup_opengl( int width, int height ) {
     glLightfv(GL_LIGHT1, GL_POSITION,LightPosition);
     glEnable(GL_LIGHT1);
     glLoadIdentity( );
-    /*
-     * EXERCISE:
-     * Replace this with a call to glFrustum.
-     */
+    // TODO Replace this with a call to glFrustum.
     gluPerspective( 60.0, ratio, 1.0, 1024.0 );
     
     buildFont();
@@ -290,29 +279,21 @@ int main( int argc, char* argv[] ) {
     you_z = getWorldZ();
     you_angle = getWorldAngle();
 
-    /* Information about the current video settings. */
     const SDL_VideoInfo* info = NULL;
-    /* Dimensions of our window. */
     int width = 0;
     int height = 0;
-    /* Color depth in bits of our window. */
     int bpp = 0;
-    /* Flags we will pass into SDL_SetVideoMode. */
     int flags = 0;
     
-        /* First, initialize SDL's video subsystem. */
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
-        /* Failed, exit. */
         fprintf( stderr, "Video initialization failed: %s\n",
              SDL_GetError( ) );
         quit_app( 1 );
     }
 
-    /* Let's get some video information. */
     info = SDL_GetVideoInfo( );
 
     if( !info ) {
-        /* This should probably never happen. */
         fprintf( stderr, "Video query failed: %s\n",
              SDL_GetError( ) );
         quit_app( 1 );
@@ -331,9 +312,6 @@ int main( int argc, char* argv[] ) {
     if (fullscreen)
         flags |= SDL_FULLSCREEN;
 
-    /*
-     * Set the video mode
-     */
     if( SDL_SetVideoMode( width, height, bpp, flags ) == 0 ) {
         fprintf( stderr, "Video mode set failed: %s\n",
              SDL_GetError( ) );
