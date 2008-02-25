@@ -351,6 +351,17 @@ OBJECT CreateWall(float minX, float minY, float minZ, float maxX, float maxY, fl
 }
 
 void DrawWorld() {
+    glLoadIdentity(); you_compensate();
+    glBegin( GL_QUADS );
+    glColor3fv( green );
+    glVertex3f( 10, 0, -10);
+    glColor3fv( red );
+    glVertex3f(-10, 0, -10);
+    glColor3fv( blue );
+    glVertex3f( -10, 0, 10);
+    glColor3fv( yellow );
+    glVertex3f( 10, 0, 10);
+    glEnd( );
     for (int i=0; i<numObjects; i++) {
         glLoadIdentity(); you_compensate();
         glTranslatef( Objects[i].pos.x, Objects[i].pos.y, Objects[i].pos.z );

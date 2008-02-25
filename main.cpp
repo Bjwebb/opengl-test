@@ -203,35 +203,9 @@ void draw_screen( void ) {
     glColorMaterial ( GL_FRONT_AND_BACK, GL_EMISSION ) ;
     glEnable ( GL_COLOR_MATERIAL ) ;
     
-    glBegin( GL_QUADS );
-    glNormal3f( 0.0f,1.0f, 0.0f);
-    glColor3fv( green );
-//     GLfloat *col  = new GLfloat[3];
-//     col[0] = 0; col[1] = 255; col[2] = 0;
-//     glMaterialfv( GL_FRONT, GL_COLOR_INDEXES, col );
-    glVertex3f( 10, 0, -10);
-    glColor3fv( red );
-    glVertex3f(-10, 0, -10);
-    glColor3fv( blue );
-    glVertex3f( -10, 0, 10);
-    glColor3fv( yellow );
-    glVertex3f( 10, 0, 10);
-    
-    glNormal3f( 0.0f,-1.0f, 0.0f);
-    glColor3fv( yellow );
-    glVertex3f( 10, 0, 10);
-    glColor3fv( blue );
-    glVertex3f( -10, 0, 10);
-    glColor3fv( red );
-    glVertex3f(-10, 0, -10);
-    glColor3fv( green );
-    glVertex3f( 10, 0, -10);
-    glEnd( );
-
-// TODO why does this kill it?
-//     glLoadIdentity(); you_compensate();
-//     glTranslatef( 0.0f, 3.0f, 0.0f );
-//     draw_cube();
+    glLoadIdentity(); you_compensate();
+    glTranslatef( 0.0f, 3.0f, 0.0f );
+    draw_cube();
     
     DrawWorld();
     
