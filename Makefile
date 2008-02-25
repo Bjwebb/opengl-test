@@ -1,7 +1,7 @@
 CC = g++
 
 all:
-	$(CC) main.cpp loadworld.cpp collision.cpp font.cpp -o test -lSDL -lglut -g
+	$(CC) main.cpp loadworld.cpp collision.cpp font.cpp cube.cpp -o test -lSDL -lglut -g
 
 clean:
 	@echo Cleaning up...

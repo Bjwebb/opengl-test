@@ -55,6 +55,7 @@ struct WALL
 };
 
 void you_compensate();
+void draw_cube();
 
 void SetupWorld(char* worldfile);
 float getWorldX();
