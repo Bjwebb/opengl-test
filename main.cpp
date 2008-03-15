@@ -146,11 +146,11 @@ void draw_screen( void ) {
         glLoadIdentity(); glTranslatef(0, 0, -1);
         glColor3f(1, 1, 1);
         glRasterPos2f(-0.7f, 0.5f);
-        glPrint("To Joel,");
+        glPrint("The Cake,");
         glRasterPos2f(-0.7f, 0.4f);
-        glPrint("Happy 12th Birthday,");
-        glRasterPos2f(-0.7f, 0.3f);
-        glPrint("From Ben");
+        glPrint("Is a Lie!!");
+//         glRasterPos2f(-0.7f, 0.3f);
+//         glPrint("Third Line");
     }
     
     Frames++;

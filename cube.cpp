@@ -1,5 +1,7 @@
 #include "main.h"
 
+// TODO turn this into a special objects section
+
 float cube_angle = 0.0f;
 
 void draw_cube() {
